@@ -4,11 +4,11 @@ ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
 BINARY_NAME?=app
-DIR_OUT=$(CURDIR)/out
+DIR_OUT=$(CURDIR)/dist
 
-.PHONY: all clean deps build install
+.PHONY: all clean deps build
 
-all: clean build install
+all: clean build
 
 clean:
 	@printf "$(OK_COLOR)==> Cleaning project$(NO_COLOR)\n"
@@ -25,7 +25,7 @@ build:
 .PHONY: tests test-integration test-unit
 tests: test-integration test-unit
 
-test-integration: tools.format tools.vet
+test-integration:
 	@command -v godog >/dev/null ; if [ $$? -ne 0 ]; then \
 			echo "--> installing godog"; \
 	go get github.com/cucumber/godog/cmd/godog; \
@@ -37,7 +37,7 @@ test-integration: tools.format tools.vet
 	@printf "$(OK_COLOR)==> Running integration tests$(NO_COLOR)\n"
 	go test ./tests -godog -stop-on-failure -v
 
-test-unit: tools.format tools.vet
+test-unit:
 	@printf "$(OK_COLOR)==> Unit Testing$(NO_COLOR)\n"
 	go test -v -race -cover ./...
 
@@ -51,39 +51,9 @@ deps:
 	go mod vendor
 
 #---------------
-#-- tools
+#-- lint
 #---------------
-.PHONY: tools tools.errcheck tools.golint tools.goimports tools.format tools.vet
-tools: tools.errcheck tools.goimports tools.format tools.lint tools.vet
-
-tools.goimports:
-	@command -v goimports >/dev/null ; if [ $$? -ne 0 ]; then \
-		echo "--> installing goimports"; \
-		go get golang.org/x/tools/cmd/goimports; \
-	fi
-	@echo "$(OK_COLOR)==> checking imports 'goimports' tool$(NO_COLOR)"
-	@goimports -l -w cmd internal &>/dev/null | grep ".*\.go"; if [ "$$?" = "0" ]; then exit 1; fi
-
-tools.format:
-	@echo "$(OK_COLOR)==> formatting code with 'gofmt' tool$(NO_COLOR)"
-	@gofmt -l -s -w cmd internal | grep ".*\.go"; if [ "$$?" = "0" ]; then exit 1; fi
-
-tools.lint:
-	@command -v golint >/dev/null ; if [ $$? -ne 0 ]; then \
-		echo "--> installing golint"; \
-		go get github.com/golang/lint/golint; \
-	fi
-	@echo "$(OK_COLOR)==> checking code style with 'golint' tool$(NO_COLOR)"
-	go list ./... | xargs -n 1 golint -set_exit_status
-
-tools.vet:
-	@echo "$(OK_COLOR)==> checking code correctness with 'go vet' tool$(NO_COLOR)"
-	go vet ./...
-
-tools.errcheck:
-	@command -v errcheck >/dev/null ; if [ $$? -ne 0 ]; then \
-			echo "--> installing errcheck"; \
-			go get -u github.com/kisielk/errcheck; \
-		fi
-	@echo "$(OK_COLOR)==> checking proper error handling with 'go errcheck' tool$(NO_COLOR)"
-	@errcheck -ignoretests ./cmd/... ./internal/... ./pkg/...
+.PHONY: lint
+lint:
+	which golangci-lint; if [ $$? -ne 0 ]; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.21.0; fi
+	golangci-lint run  --modules-download-mode vendor --fix

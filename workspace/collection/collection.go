@@ -10,8 +10,8 @@ type Collection struct {
 	ID      ID        `json:"id,string"`
 	Name    Name      `json:"name,string"`
 	Tabs    []tab.Tab `json:"tabs"`
-	Created time.Time `json:"created,string"`
-	Updated time.Time `json:"updated,string"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
 }
 
 // New returns a new collection created for the first time

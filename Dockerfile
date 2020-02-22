@@ -5,4 +5,4 @@ RUN make
 
 FROM ubuntu:bionic-20190424
 RUN apt-get update && apt-get install -y apt-utils ca-certificates
-COPY --from=builder /go/src/github.com/damianopetrungaro/app/out/ /
+COPY --from=builder /go/src/github.com/damianopetrungaro/app/dist/ /

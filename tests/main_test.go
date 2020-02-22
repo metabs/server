@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/tests/features"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/unprogettosenzanomecheforseinizieremo/server/tests/features"
 
 	"github.com/cucumber/godog"
 )
@@ -20,7 +21,6 @@ func TestMain(m *testing.M) {
 	if !runGoDogTests {
 		os.Exit(0)
 	}
-
 
 	status := godog.RunWithOptions("App", func(s *godog.Suite) {
 		FeatureContext(s)

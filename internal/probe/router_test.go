@@ -75,6 +75,10 @@ func testLivenessSucceedToPingServer(t *testing.T) {
 	}
 
 	got, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("could not read response body")
+		t.Errorf("got: %s", err)
+	}
 	want := `["Server is live"]`
 	if want != string(got) {
 		t.Errorf("could not match response body")
@@ -103,6 +107,11 @@ func testLivenessFailToPingServer(t *testing.T) {
 	}
 
 	got, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("could not read response body")
+		t.Errorf("got: %s", err)
+	}
+
 	want := `["Database is not alive"]`
 	if want != string(got) {
 		t.Errorf("could not match response body")
@@ -131,6 +140,11 @@ func testReadinessSucceedToPingServer(t *testing.T) {
 	}
 
 	got, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("could not read response body")
+		t.Errorf("got: %s", err)
+	}
+
 	want := `["Server is ready"]`
 	if want != string(got) {
 		t.Errorf("could not match response body")
@@ -160,6 +174,11 @@ func testReadinessFailToPingServer(t *testing.T) {
 	}
 
 	got, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("could not read response body")
+		t.Errorf("got: %s", err)
+	}
+
 	want := `["Database is not alive"]`
 	if want != string(got) {
 		t.Errorf("could not match response body")

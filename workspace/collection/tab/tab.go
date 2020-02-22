@@ -9,10 +9,10 @@ type Tab struct {
 	ID          ID          `json:"id,string"`
 	Title       Title       `json:"title,string"`
 	Description Description `json:"description,string"`
-	Icon        Icon        `json:"icon,string"`
-	Link        Link        `json:"link,string"`
-	Created     time.Time   `json:"created,string"`
-	Updated     time.Time   `json:"updated,string"`
+	Icon        Icon        `json:"icon"`
+	Link        Link        `json:"link"`
+	Created     time.Time   `json:"created"`
+	Updated     time.Time   `json:"updated"`
 }
 
 // New returns a new tab created for the first time
