@@ -14,7 +14,7 @@ type serverFeature struct {
 }
 
 // ServerIsUpAndRunning Feature to check that the server is up and running
-func ServerIsUpAndRunning(s *godog.Suite, ) {
+func ServerIsUpAndRunning(s *godog.Suite) {
 	f := &serverFeature{
 		res: &http.Response{},
 	}

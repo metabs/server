@@ -1,5 +1,5 @@
 data/
-out/
+dist/
 vendor/
 .env
 wire_gen.go

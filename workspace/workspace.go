@@ -11,8 +11,8 @@ type Workspace struct {
 	Name        Name                    `json:"name,string"`
 	OwnerID     OwnerID                 `json:"owner_id,string"`
 	Collections []collection.Collection `json:"collections"`
-	Created     time.Time               `json:"created,string"`
-	Updated     time.Time               `json:"updated,string"`
+	Created     time.Time               `json:"created"`
+	Updated     time.Time               `json:"updated"`
 }
 
 // New returns a new workspace created for the first time
