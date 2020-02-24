@@ -1,7 +1,6 @@
 package tab
 
 import (
-	"net/url"
 	"testing"
 )
 
@@ -9,8 +8,8 @@ func TestNewTab(t *testing.T) {
 	id := ID("a")
 	title := Title("a")
 	description := Description("a")
-	icon := Icon(url.URL{Scheme: "https"})
-	link := Link(url.URL{Scheme: "http"})
+	icon := Icon("https://github.com/damianopetrungaro/profile.png")
+	link := Link("http://github.com/damianopetrungaro/profile.png")
 
 	tab := New(id, title, description, icon, link)
 	if tab.ID != id {
@@ -61,11 +60,10 @@ func TestNewTab(t *testing.T) {
 
 	title = "b"
 	description = "b"
-	icon = Icon(url.URL{Scheme: "http"})
-	link = Link(url.URL{Scheme: "https"})
+	icon = "https://www.github.com/damianopetrungaro/image.png"
+	link = "http://www.github.com/damianopetrungaro/image.png"
 
 	tab.Update(title, description, icon, link)
-
 
 	if tab.ID != id {
 		t.Error("could not match id")

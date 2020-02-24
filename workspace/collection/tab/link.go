@@ -10,14 +10,25 @@ import (
 var ErrInvalidLink = errors.New("tab: could not validate link")
 
 // Link represents a tab link
-type Link url.URL
+type Link string
 
 // NewLink return an link and an error back
 func NewLink(i string) (Link, error) {
-	u, err := url.ParseRequestURI(i)
+	_, err := url.ParseRequestURI(i)
 	if err != nil {
-		return Link{}, fmt.Errorf("%w: '%s' is not valide due to: %s", ErrInvalidLink, i, err)
+		return "", fmt.Errorf("%w: '%s' is not valide due to: %s", ErrInvalidLink, i, err)
 	}
 
-	return Link(*u), nil
+	return Link(i), nil
+}
+
+func (l *Link) UnmarshalJSON(data []byte) error {
+
+	i2, err := NewLink(string(data))
+	if err != nil {
+		return err
+	}
+
+	*l = i2
+	return nil
 }

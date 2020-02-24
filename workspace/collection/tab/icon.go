@@ -10,14 +10,25 @@ import (
 var ErrInvalidIcon = errors.New("tab: could not validate icon")
 
 // Icon represents a tab icon
-type Icon url.URL
+type Icon string
 
 // NewIcon return an icon and an error back
 func NewIcon(i string) (Icon, error) {
-	u, err := url.ParseRequestURI(i)
+	_, err := url.ParseRequestURI(i)
 	if err != nil {
-		return Icon{}, fmt.Errorf("%w: '%s", ErrInvalidIcon, err)
+		return "", fmt.Errorf("%w: '%s", ErrInvalidIcon, err)
 	}
 
-	return Icon(*u), nil
+	return Icon(i), nil
+}
+
+func (i *Icon) UnmarshalJSON(data []byte) error {
+
+	i2, err := NewIcon(string(data))
+	if err != nil {
+		return err
+	}
+
+	*i = i2
+	return nil
 }

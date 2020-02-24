@@ -1,9 +1,7 @@
 package tab
 
-
 import (
 	"errors"
-	"net/url"
 	"testing"
 )
 
@@ -37,11 +35,11 @@ func TestNewLink(t *testing.T) {
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			u := url.URL(i)
-			if u.String() != r.wantLink {
+
+			if string(i) != r.wantLink {
 				t.Error("could not match title")
 				t.Errorf("want: %s", r.wantLink)
-				t.Errorf("got : %s", u.String())
+				t.Errorf("got : %s", i)
 			}
 		})
 	}
