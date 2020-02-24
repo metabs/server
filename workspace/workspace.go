@@ -9,7 +9,7 @@ import (
 type Workspace struct {
 	ID          ID                      `json:"id,string"`
 	Name        Name                    `json:"name,string"`
-	OwnerID     OwnerID                 `json:"owner_id,string"`
+	CustomerID     CustomerID                 `json:"customer_id,string"`
 	Collections []collection.Collection `json:"collections"`
 	Created     time.Time               `json:"created"`
 	Updated     time.Time               `json:"updated"`
@@ -19,12 +19,12 @@ type Workspace struct {
 func New(
 	id ID,
 	name Name,
-	ownerID OwnerID,
+	customerID CustomerID,
 ) *Workspace {
 	return &Workspace{
 		ID:      id,
 		Name:    name,
-		OwnerID: ownerID,
+		CustomerID: customerID,
 		Created: time.Now(),
 	}
 }

@@ -8,8 +8,8 @@ import (
 func TestNewWorkspace(t *testing.T) {
 	id := ID("a")
 	name := Name("a")
-	ownerID := OwnerID("a")
-	workspace := New(id, name, ownerID)
+	customerID := CustomerID("a")
+	workspace := New(id, name, customerID)
 
 	if workspace.ID != id {
 		t.Error("could not match id")

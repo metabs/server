@@ -5,39 +5,39 @@ import (
 	"testing"
 )
 
-func TestNewOwnerID(t *testing.T) {
+func TestNewCustomerID(t *testing.T) {
 
 	table := []struct {
 		name        string
 		raw         string
-		wantOwnerID string
+		wantCustomerID string
 		wantErr     error
 	}{
 		{
-			name:        "valid owner id",
+			name:        "valid customer id",
 			raw:         "c43a5446-b864-4c63-b360-c035ba26057b",
-			wantOwnerID: "c43a5446-b864-4c63-b360-c035ba26057b",
+			wantCustomerID: "c43a5446-b864-4c63-b360-c035ba26057b",
 			wantErr:     nil,
 		},
 		{
-			name:        "invalid owner id",
+			name:        "invalid customer id",
 			raw:         "z43a5446-x123-4c63-b360-c035ba26057b",
-			wantOwnerID: "",
-			wantErr:     ErrInvalidOwnerID,
+			wantCustomerID: "",
+			wantErr:     ErrInvalidCustomerID,
 		},
 	}
 
 	for _, r := range table {
 		t.Run(r.name, func(t *testing.T) {
-			d, err := NewOwnerID(r.raw)
+			d, err := NewCustomerID(r.raw)
 			if !errors.Is(err, r.wantErr) {
 				t.Error("could not match errors")
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantOwnerID {
-				t.Error("could not match owner id")
-				t.Errorf("want: %s", r.wantOwnerID)
+			if string(d) != r.wantCustomerID {
+				t.Error("could not match customer id")
+				t.Errorf("want: %s", r.wantCustomerID)
 				t.Errorf("got : %s", d)
 			}
 		})
