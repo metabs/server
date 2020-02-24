@@ -35,7 +35,7 @@ test-integration:
 	@docker-compose up -d
 
 	@printf "$(OK_COLOR)==> Running integration tests$(NO_COLOR)\n"
-	go test ./tests -godog -stop-on-failure -v
+	go test ./tests -cucumber -stop-on-failure -v
 
 test-unit:
 	@printf "$(OK_COLOR)==> Unit Testing$(NO_COLOR)\n"
@@ -56,4 +56,4 @@ deps:
 .PHONY: lint
 lint:
 	which golangci-lint; if [ $$? -ne 0 ]; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.21.0; fi
-	golangci-lint run  --modules-download-mode vendor --fix
+	golangci-lint run --modules-download-mode vendor --fix
