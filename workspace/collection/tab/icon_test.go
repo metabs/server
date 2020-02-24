@@ -2,7 +2,6 @@ package tab
 
 import (
 	"errors"
-	"net/url"
 	"testing"
 )
 
@@ -36,11 +35,11 @@ func TestNewIcon(t *testing.T) {
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			u := url.URL(i)
-			if u.String() != r.wantIcon {
+
+			if string(i) != r.wantIcon {
 				t.Error("could not match icon")
 				t.Errorf("want: %s", r.wantIcon)
-				t.Errorf("got : %s", u.String())
+				t.Errorf("got : %s", i)
 			}
 		})
 	}
