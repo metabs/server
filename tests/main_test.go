@@ -12,13 +12,13 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	var runGoDogTests bool
+	var runCucumberTests bool
 	var stopOnFailure bool
-	flag.BoolVar(&runGoDogTests, "godog", false, "Set this flag if you want to run godog BDD tests")
+	flag.BoolVar(&runCucumberTests, "cucumber", false, "Set this flag if you want to run godog BDD tests")
 	flag.BoolVar(&stopOnFailure, "stop-on-failure", false, "Stop processing on first failed scenario.. Flag is passed to godog")
 	flag.Parse()
 
-	if !runGoDogTests {
+	if !runCucumberTests {
 		os.Exit(0)
 	}
 
