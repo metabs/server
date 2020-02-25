@@ -61,7 +61,8 @@ func FeatureContext(s *godog.Suite, db *firestore.Client) {
 
 // copied from google doc :)
 func deleteCollection(client *firestore.Client) error {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
 
 	docs := client.Collection("workspace").Documents(ctx)
 
