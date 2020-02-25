@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace"
 	nethttp "net/http"
 	"os"
 	"os/signal"
@@ -34,13 +35,14 @@ func main() {
 	}()
 
 	logger.Info("Application stopped.")
-	db, err := database.New()
+	db, err := database.New(ctx)
 	if err != nil {
 		logger.With("error", err).Fatal("Could not connect to the database.")
 	}
 
 	r := http.NewRouter(logger)
-	r.Route("/", probe.NewRouter(db))
+	r.Route("/", probe.NewRouter(db, logger))
+	r.Route("/workspaces", workspace.NewRouter(&workspace.Repo{Client:db}, logger))
 	srv := http.New(r)
 
 	done := make(chan struct{}, 1)
