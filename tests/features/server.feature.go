@@ -14,11 +14,10 @@ type serverFeature struct {
 }
 
 // ServerIsUpAndRunning Feature to check that the server is up and running
-func ServerIsUpAndRunning(s *godog.Suite) {
+func ServerIsUpAndRunning(s *godog.Suite){
 	f := &serverFeature{
 		res: &http.Response{},
 	}
-	s.Step(`^an HTTP "([^"]*)" request with the URI "([^"]*)"$`, f.anHTTPRequestWithTheURI)
 	s.Step(`^an HTTP "([^"]*)" request with the URI "([^"]*)"$`, f.anHTTPRequestWithTheURI)
 	s.Step(`^the server must reply with a status code (\d+)$`, f.theServerMustReplyWithAStatusCode)
 	s.Step(`^the server must reply with a body:$`, f.theServerMustReplyWithABody)
