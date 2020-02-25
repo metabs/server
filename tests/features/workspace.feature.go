@@ -136,7 +136,7 @@ func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnEmptyListOfCollec
 func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnCreationDate() error {
 
 	now := time.Now()
-	if f.ws.Created.IsZero() || f.ws.Created.Before(now) {
+	if f.ws.Created.IsZero() || f.ws.Created.After(now) {
 		fmt.Println(f.ws.Created.Second(), now.Second())
 		return fmt.Errorf("creation date is wrong. Expected before than %v, Given: %v", now, f.ws.Created)
 	}
