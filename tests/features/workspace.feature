@@ -98,6 +98,7 @@ Feature: Workspace APIs are up and running
     Then the API must reply with a body containing an id as "667cdfdc-27a5-4c4b-b990-07f460a58dac"
     And the API must reply with a body containing a name as "Personal :)"
     And the API must reply with a body containing an empty list of collections
+    And the API must reply with a body containing an creation date
     And the API must reply with a body containing an update after create date
 
   Scenario: Server returns a list of workspace owned by a customer
