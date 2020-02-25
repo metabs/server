@@ -14,3 +14,6 @@ jobs:
         run: cp .env.dist .env
       - name: Run tests
         run: make tests
+        env:
+          FIRESTORE_EMULATOR_HOST: localhost:8090
+          FIRESTORE_PROJECT_ID: unprogettosenzanomecheforseinizieremo
