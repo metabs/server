@@ -51,9 +51,9 @@ func TestNewWorkspace(t *testing.T) {
 		t.Errorf("got : %s", update1)
 	}
 
-	collection1 := collection.Collection{ID: "1"}
-	collection2 := collection.Collection{ID: "2"}
-	collections := []collection.Collection{collection1, collection2}
+	collection1 := &collection.Collection{ID: "1"}
+	collection2 := &collection.Collection{ID: "2"}
+	collections := []*collection.Collection{collection1, collection2}
 	workspace.AddCollections(collection1, collection2)
 
 	for i, c := range workspace.Collections {

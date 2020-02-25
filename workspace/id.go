@@ -20,3 +20,17 @@ func NewID(id string) (ID, error) {
 
 	return ID(id), nil
 }
+
+func (i *ID) UnmarshalJSON(data []byte) error {
+	i2, err := NewID(string(data))
+	if err != nil {
+		return err
+	}
+	*i = i2
+
+	return nil
+}
+
+func (i ID) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, i)), nil
+}
