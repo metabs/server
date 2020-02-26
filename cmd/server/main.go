@@ -42,7 +42,7 @@ func main() {
 
 	r := http.NewRouter(logger)
 	r.Route("/", probe.NewRouter(db, logger))
-	r.Route("/workspaces", workspace.NewRouter(&workspace.Repo{Client:db}, logger))
+	r.Route("/workspaces", workspace.NewRouter(&workspace.Repo{Client:db}, &workspace.CollectionRepo{}, logger))
 	srv := http.New(r)
 
 	done := make(chan struct{}, 1)
