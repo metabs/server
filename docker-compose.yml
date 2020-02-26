@@ -11,6 +11,11 @@ services:
       - 80:80
     env_file:
       - .env
+    healthcheck:
+      test: curl --fail -s http://localhost/readiness || exit 1
+      interval: 5s
+      timeout: 1s
+      retries: 3
 
   firestore:
     image: mtlynch/firestore-emulator
