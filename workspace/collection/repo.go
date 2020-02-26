@@ -1,10 +1,16 @@
 package collection
 
-import "context"
+import (
+	"context"
+	"errors"
+)
+
+var (
+	//Errors that can be used from the repository
+	ErrRepoNextID = errors.New("collection: could not retrieve next id for the collection")
+)
 
 // Repo represents the persistence layer for the collection aggregate
 type Repo interface {
-	Get(context.Context, ID) (*Collection, error)
-	Add(context.Context, *Collection) error
-	Delete(context.Context, ID) error
+	NextID(context.Context) (ID, error)
 }

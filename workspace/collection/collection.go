@@ -9,9 +9,9 @@ import (
 type Collection struct {
 	ID      ID        `json:"id,string"`
 	Name    Name      `json:"name,string"`
-	Tabs    []tab.Tab `json:"tabs"`
+	Tabs    []tab.Tab `json:"tabs,omitempty"`
 	Created time.Time `json:"created"`
-	Updated time.Time `json:"updated"`
+	Updated time.Time `json:"updated,omitempty"`
 }
 
 // New returns a new collection created for the first time

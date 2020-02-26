@@ -80,4 +80,46 @@ func TestNewWorkspace(t *testing.T) {
 		t.Errorf("upadte 1 : %s", update1)
 		t.Errorf("upadte 2 : %s", update2)
 	}
+
+	collection3 := &collection.Collection{ID: "3"}
+	if workspace.RemoveCollection(collection3.ID) {
+		t.Error("could not mismatch remove collection on non existing one")
+		t.Errorf("want : %t", false)
+		t.Errorf("got : %t", true)
+	}
+
+	for i, c := range workspace.Collections {
+		if c.ID != collections[i].ID {
+			t.Errorf("could not match collection on index %d", i)
+			t.Errorf("want: %v", collections[i])
+			t.Errorf("got : %v", c)
+		}
+	}
+
+	if len(workspace.Collections) != len(collections) {
+		t.Error("could not match collections number")
+		t.Errorf("want: %d", len(collections))
+		t.Errorf("got : %d", len(workspace.Collections))
+	}
+
+	if !workspace.RemoveCollection(collection2.ID) {
+		t.Error("could not mismatch remove collection on existing one")
+		t.Errorf("want : %t", false)
+		t.Errorf("got : %t", true)
+	}
+	collections = []*collection.Collection{collection1}
+	for i, c := range workspace.Collections {
+		if c.ID != collections[i].ID {
+			t.Errorf("could not match collection on index %d", i)
+			t.Errorf("want: %v", collections[i])
+			t.Errorf("got : %v", c)
+		}
+	}
+
+	if len(workspace.Collections) != len(collections) {
+		t.Error("could not match collections number")
+		t.Errorf("want: %d", len(collections))
+		t.Errorf("got : %d", len(workspace.Collections))
+	}
+
 }
