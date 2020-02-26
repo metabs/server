@@ -18,6 +18,13 @@ type Repo struct {
 	Client *firestore.Client
 }
 
+type CollectionRepo struct {
+}
+
+func (r *CollectionRepo) NextID(_ context.Context) (collection.ID, error) {
+	return collection.NewID(uuid.New().String())
+}
+
 func (r *Repo) NextID(_ context.Context) (workspace.ID, error) {
 	return workspace.NewID(uuid.New().String())
 }

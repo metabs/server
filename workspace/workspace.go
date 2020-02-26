@@ -41,3 +41,31 @@ func (w *Workspace) AddCollections(collections ...*collection.Collection) {
 	w.Collections = append(w.Collections, collections...)
 	w.Updated = time.Now()
 }
+
+// RemoveCollection removes a collection if exists
+func (w *Workspace) RemoveCollection(id collection.ID) bool {
+	for i, coll := range w.Collections {
+		if coll.ID == id {
+			w.Collections[i] = w.Collections[len(w.Collections)-1]
+			w.Collections[len(w.Collections)-1] = nil
+			w.Collections = w.Collections[:len(w.Collections)-1]
+			w.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
+}
+
+// RenameCollection finds a collection by id and renames it
+func (w *Workspace) RenameCollection(id collection.ID, name collection.Name) bool {
+	for _, coll := range w.Collections {
+		if coll.ID == id {
+			coll.Rename(name)
+			w.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
+}
