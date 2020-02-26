@@ -10,9 +10,9 @@ type Workspace struct {
 	ID          ID                       `json:"id,string"`
 	Name        Name                     `json:"name,string"`
 	CustomerID  CustomerID               `json:"customer_id,string"`
-	Collections []*collection.Collection `json:"collections"`
+	Collections []*collection.Collection `json:"collections,omitempty"`
 	Created     time.Time                `json:"created"`
-	Updated     time.Time                `json:"updated"`
+	Updated     time.Time                `json:"updated,omitempty"`
 }
 
 // New returns a new workspace created for the first time
@@ -36,7 +36,7 @@ func (w *Workspace) Rename(name Name) {
 	w.Updated = time.Now()
 }
 
-// AddCollections change the name of a workspace
+// AddCollections add a collection to the workspace
 func (w *Workspace) AddCollections(collections ...*collection.Collection) {
 	w.Collections = append(w.Collections, collections...)
 	w.Updated = time.Now()
