@@ -43,6 +43,14 @@ func WorkspaceAPIs(s *godog.Suite, db *firestore.Client) {
 	s.Step(`^the API must reply with a body containing an empty list of collections$`, f.theAPIMustReplyWithABodyContainingAnEmptyListOfCollections)
 	s.Step(`^the API must reply with a body containing an update after create date$`, f.theAPIMustReplyWithABodyContainingAnUpdateDateAfterCreateDate)
 
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an id$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnId)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a name as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingANameAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an creation date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnCreationDate)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing nil update date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingNilUpdateDate)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnIdAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an update after create date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnUpdateDateAfterCreateDate)
+
+
 }
 
 func (f *workspaceFeature) anHTTPRequestWithTheURIAndBody(method, uri string, body *gherkin.DocString) error {
@@ -107,8 +115,25 @@ func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnId() error {
 
 	return nil
 }
+
 func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnIdAs(id string) error {
 	if string(f.ws.ID) != id {
+		return fmt.Errorf("id is wrong. Expected %s, Given: %s", id, f.ws.ID)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnId(i int) error {
+	if _, err := uuid.Parse(string(f.ws.Collections[i].ID)); err != nil {
+		return fmt.Errorf("id is wrong. Expected an uuid back, Given: %s", f.ws.ID)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnIdAs(i int, id string) error {
+	if string(f.ws.Collections[i].ID) != id {
 		return fmt.Errorf("id is wrong. Expected %s, Given: %s", id, f.ws.ID)
 	}
 
@@ -124,8 +149,16 @@ func (f *workspaceFeature) theAPIMustReplyWithABodyContainingANameAs(wantName st
 	return nil
 }
 
-func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnEmptyListOfCollections() error {
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingANameAs(i int, wantName string) error {
 
+	if string(f.ws.Collections[i].Name) != wantName {
+		return fmt.Errorf("Name is wrong. Expected %s, Given: %s ", wantName, f.ws.Name)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnEmptyListOfCollections() error {
 	if len(f.ws.Collections) > 0 {
 		return fmt.Errorf("collection is wrong. Expected an empty collection back, Given: %v", f.ws.Collections)
 	}
@@ -134,10 +167,8 @@ func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnEmptyListOfCollec
 }
 
 func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnCreationDate() error {
-
-	now := time.Now()
+	now := time.Now().Add(time.Second) // for safety
 	if f.ws.Created.IsZero() || f.ws.Created.After(now) {
-		fmt.Println(f.ws.Created.Second(), now.Second())
 		return fmt.Errorf("creation date is wrong. Expected before than %v, Given: %v", now, f.ws.Created)
 	}
 
@@ -157,6 +188,33 @@ func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnUpdateDateAfterCr
 
 	if !f.ws.Updated.After(f.ws.Created) {
 		return fmt.Errorf("update date is wrong. Expected a after creation %v, Given: %v", f.ws.Created, f.ws.Updated)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnCreationDate(i int) error {
+	now := time.Now().Add(time.Second) // for safety
+	if f.ws.Collections[i].Created.IsZero() || f.ws.Collections[i].Created.After(now) {
+		return fmt.Errorf("creation date is wrong. Expected before than %v, Given: %v", now, f.ws.Collections[i].Created)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingNilUpdateDate(i int) error {
+
+	if !f.ws.Collections[i].Updated.IsZero() {
+		return fmt.Errorf("update date is wrong. Expected a nil date, Given: %v", f.ws.Collections[i].Updated)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnUpdateDateAfterCreateDate(i int) error {
+
+	if !f.ws.Collections[i].Updated.After(f.ws.Created) {
+		return fmt.Errorf("update date is wrong. Expected a after creation %v, Given: %v", f.ws.Collections[i].Created, f.ws.Collections[i].Updated)
 	}
 
 	return nil
