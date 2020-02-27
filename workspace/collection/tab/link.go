@@ -16,19 +16,8 @@ type Link string
 func NewLink(i string) (Link, error) {
 	_, err := url.ParseRequestURI(i)
 	if err != nil {
-		return "", fmt.Errorf("%w: '%s' is not valide due to: %s", ErrInvalidLink, i, err)
+		return "", fmt.Errorf("%w: %s", ErrInvalidLink, err)
 	}
 
 	return Link(i), nil
-}
-
-func (l *Link) UnmarshalJSON(data []byte) error {
-
-	i2, err := NewLink(string(data))
-	if err != nil {
-		return err
-	}
-
-	*l = i2
-	return nil
 }

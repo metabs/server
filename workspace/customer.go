@@ -20,18 +20,3 @@ func NewCustomerID(id string) (CustomerID, error) {
 
 	return CustomerID(id), nil
 }
-
-
-func (c *CustomerID) UnmarshalJSON(data []byte) error {
-	c2, err := NewCustomerID(string(data))
-	if err != nil {
-		return err
-	}
-	*c = c2
-
-	return nil
-}
-
-func (c CustomerID) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%s"`, c)), nil
-}

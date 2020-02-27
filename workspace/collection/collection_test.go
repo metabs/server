@@ -50,9 +50,9 @@ func TestNewCollection(t *testing.T) {
 		t.Errorf("got : %s", update1)
 	}
 
-	tab1 := tab.Tab{ID: "1"}
-	tab2 := tab.Tab{ID: "2"}
-	tabs := []tab.Tab{tab1, tab2}
+	tab1 := &tab.Tab{ID: "1"}
+	tab2 := &tab.Tab{ID: "2"}
+	tabs := []*tab.Tab{tab1, tab2}
 	collection.AddTabs(tab1, tab2)
 
 	for i, tb := range collection.Tabs {

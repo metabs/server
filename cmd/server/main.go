@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace"
-	nethttp "net/http"
+	workspaceHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace/http"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +13,7 @@ import (
 	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/log"
 
 	database "github.com/unprogettosenzanomecheforseinizieremo/server/internal/db"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/http"
+	serverHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/http"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/probe"
 )
 
@@ -40,23 +41,23 @@ func main() {
 		logger.With("error", err).Fatal("Could not connect to the database.")
 	}
 
-	r := http.NewRouter(logger)
+	r := serverHTTP.NewRouter(logger)
 	r.Route("/", probe.NewRouter(db, logger))
-	r.Route("/workspaces", workspace.NewRouter(&workspace.Repo{Client:db}, &workspace.CollectionRepo{}, logger))
-	srv := http.New(r)
+	r.Route("/workspaces", workspaceHTTP.NewRouter(&workspace.Repo{Client: db, Logger: logger}, logger))
+	srv := serverHTTP.New(r)
 
 	done := make(chan struct{}, 1)
 	go func(done chan<- struct{}) {
 		<-ctx.Done()
 
-		logger.Info("Stopping the http...")
+		logger.Info("Stopping the serverHTTP...")
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		srv.SetKeepAlivesEnabled(false)
 		if err := srv.Shutdown(ctx); err != nil {
-			logger.With("error", err).Fatal("Could not gracefully shutdown the http.")
+			logger.With("error", err).Fatal("Could not gracefully shutdown the serverHTTP.")
 		}
 
 		// If you have any metrics or logs that need to be read before the shut down, remove the comment to the next 3 lines
@@ -69,7 +70,7 @@ func main() {
 	}(done)
 
 	logger.Info("Server running...")
-	if err := srv.ListenAndServe(); err != nil && err != nethttp.ErrServerClosed {
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.With("error", err).Fatal("Could not listen and serve.")
 	}
 	<-kill

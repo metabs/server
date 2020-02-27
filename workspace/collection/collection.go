@@ -7,11 +7,11 @@ import (
 
 // Collection represent a collection
 type Collection struct {
-	ID      ID        `json:"id,string"`
-	Name    Name      `json:"name,string"`
-	Tabs    []tab.Tab `json:"tabs,omitempty"`
-	Created time.Time `json:"created"`
-	Updated time.Time `json:"updated,omitempty"`
+	ID      ID         `json:"id"`
+	Name    Name       `json:"name"`
+	Tabs    []*tab.Tab `json:"tabs,omitempty"`
+	Created time.Time  `json:"created"`
+	Updated time.Time  `json:"updated,omitempty"`
 }
 
 // New returns a new collection created for the first time
@@ -19,7 +19,7 @@ func New(id ID, name Name) *Collection {
 	return &Collection{
 		ID:      id,
 		Name:    name,
-		Tabs:    make([]tab.Tab, 0),
+		Tabs:    make([]*tab.Tab, 0),
 		Created: time.Now(),
 	}
 }
@@ -31,7 +31,46 @@ func (c *Collection) Rename(name Name) {
 }
 
 // AddTabs adds tabs to the collection
-func (c *Collection) AddTabs(tab ...tab.Tab) {
-	c.Tabs = append(c.Tabs, tab...)
+func (c *Collection) AddTabs(tabs ...*tab.Tab) {
+	c.Tabs = append(c.Tabs, tabs...)
 	c.Updated = time.Now()
+}
+
+// RemoveTab removes a tab if exists
+func (c *Collection) RemoveTab(id tab.ID) bool {
+	for i, t := range c.Tabs {
+		if t.ID == id {
+			c.Tabs[i] = c.Tabs[len(c.Tabs)-1]
+			c.Tabs[len(c.Tabs)-1] = nil
+			c.Tabs = c.Tabs[:len(c.Tabs)-1]
+			c.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
+}
+
+// UpdateTab updates tab
+func (c *Collection) FindTab(id tab.ID) (*tab.Tab, bool) {
+	for _, t := range c.Tabs {
+		if t.ID == id {
+			return t, true
+		}
+	}
+
+	return nil, false
+}
+
+// UpdateTab updates tab
+func (c *Collection) UpdateTab(t *tab.Tab) bool {
+	for i, tb := range c.Tabs {
+		if tb.ID == t.ID {
+			c.Tabs[i] = t
+			c.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
 }
