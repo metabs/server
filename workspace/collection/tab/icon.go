@@ -16,19 +16,8 @@ type Icon string
 func NewIcon(i string) (Icon, error) {
 	_, err := url.ParseRequestURI(i)
 	if err != nil {
-		return "", fmt.Errorf("%w: '%s", ErrInvalidIcon, err)
+		return "", fmt.Errorf("%w: %s", ErrInvalidIcon, err)
 	}
 
 	return Icon(i), nil
-}
-
-func (i *Icon) UnmarshalJSON(data []byte) error {
-
-	i2, err := NewIcon(string(data))
-	if err != nil {
-		return err
-	}
-
-	*i = i2
-	return nil
 }

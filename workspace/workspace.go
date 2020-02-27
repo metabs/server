@@ -2,14 +2,15 @@ package workspace
 
 import (
 	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection/tab"
 	"time"
 )
 
 // Workspace represent a workspace
 type Workspace struct {
-	ID          ID                       `json:"id,string"`
-	Name        Name                     `json:"name,string"`
-	CustomerID  CustomerID               `json:"customer_id,string"`
+	ID          ID                       `json:"id"`
+	Name        Name                     `json:"name"`
+	CustomerID  CustomerID               `json:"customer_id"`
 	Collections []*collection.Collection `json:"collections,omitempty"`
 	Created     time.Time                `json:"created"`
 	Updated     time.Time                `json:"updated,omitempty"`
@@ -68,4 +69,56 @@ func (w *Workspace) RenameCollection(id collection.ID, name collection.Name) boo
 	}
 
 	return false
+}
+
+// AddTabs adds a tab to a collection
+func (w *Workspace) AddTabs(id collection.ID, tabs ...*tab.Tab) bool {
+	for _, coll := range w.Collections {
+		if coll.ID == id {
+			coll.AddTabs(tabs...)
+			w.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
+}
+
+func (w *Workspace) RemoveTab(id tab.ID, collID collection.ID) bool {
+	for _, coll := range w.Collections {
+		if coll.ID == collID {
+			if !coll.RemoveTab(id) {
+				return false
+			}
+			w.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
+}
+
+// UpdateTab updates a tab of a collection
+func (w *Workspace) UpdateTab(t *tab.Tab, collID collection.ID) bool {
+	for _, coll := range w.Collections {
+		if coll.ID == collID {
+			if !coll.UpdateTab(t) {
+				return false
+			}
+			w.Updated = time.Now()
+			return true
+		}
+	}
+
+	return false
+}
+
+func (w *Workspace) FindTab(id tab.ID, collID collection.ID) (*tab.Tab, bool) {
+	for _, coll := range w.Collections {
+		if coll.ID == collID {
+			return coll.FindTab(id)
+		}
+	}
+
+	return nil, false
 }

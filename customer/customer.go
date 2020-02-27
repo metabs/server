@@ -5,9 +5,9 @@ import "time"
 // Represent the customer
 // At the moment it can't be update
 type Customer struct {
-	ID       ID        `json:"id,string"`
-	Email    Email     `json:"email,string"`
-	Password Password  `json:"password,string"`
+	ID       ID        `json:"id"`
+	Email    Email     `json:"email"`
+	Password Password  `json:"password"`
 	Created  time.Time `json:"created"`
 }
 

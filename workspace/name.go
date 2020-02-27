@@ -32,17 +32,3 @@ func NewName(d string) (Name, error) {
 		return Name(d), nil
 	}
 }
-
-func (n *Name) UnmarshalJSON(data []byte) error {
-	n2, err := NewName(string(data))
-	if err != nil {
-		return err
-	}
-	*n = n2
-	
-	return nil
-}
-
-func (n Name) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%s"`, n)), nil
-}

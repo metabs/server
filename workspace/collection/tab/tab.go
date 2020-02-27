@@ -6,13 +6,13 @@ import (
 
 // Tab represents a tab
 type Tab struct {
-	ID          ID          `json:"id,string"`
-	Title       Title       `json:"title,string"`
-	Description Description `json:"description,string"`
-	Icon        Icon        `json:"icon,string"`
-	Link        Link        `json:"link,string"`
+	ID          ID          `json:"id"`
+	Title       Title       `json:"title"`
+	Description Description `json:"description"`
+	Icon        Icon        `json:"icon"`
+	Link        Link        `json:"link"`
 	Created     time.Time   `json:"created"`
-	Updated     time.Time   `json:"updated"`
+	Updated     time.Time   `json:"updated,omitempty"`
 }
 
 // New returns a new tab created for the first time

@@ -3,6 +3,8 @@ package workspace
 import (
 	"context"
 	"errors"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection/tab"
 )
 
 var (
@@ -18,6 +20,8 @@ var (
 // Repo represents the persistence layer for the workspace aggregate
 type Repo interface {
 	NextID(context.Context) (ID, error)
+	NextCollectionID(context.Context) (collection.ID, error)
+	NextTabID(context.Context) (tab.ID, error)
 	List(context.Context, CustomerID) ([]*Workspace, error)
 	Get(context.Context, ID) (*Workspace, error)
 	Add(context.Context, *Workspace) error

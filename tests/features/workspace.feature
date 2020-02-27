@@ -53,7 +53,7 @@ Feature: Workspace APIs are up and running
     {
         "id": "398cdfdc-27a5-4c4b-b990-07f460a58dad",
         "name": "Work WS",
-        "customer_id": "bae3a55d-2c69-4679-808e-1c7772405281",
+        "customer_id": "1ae3a55d-2c69-4679-808e-1c7772405281",
         "collections": [],
         "created": "2019-02-25T16:04:13.349522Z",
         "updated": "0001-01-01T00:00:00Z"
