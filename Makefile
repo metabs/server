@@ -26,11 +26,6 @@ build:
 tests: test-integration test-unit
 
 test-integration:
-	@command -v godog >/dev/null ; if [ $$? -ne 0 ]; then \
-			echo "--> installing godog"; \
-	go get github.com/cucumber/godog/cmd/godog; \
-	fi
-
 	@printf "$(OK_COLOR)==> Spinning up docker-compose$(NO_COLOR)\n"
 	@docker-compose up -d
 

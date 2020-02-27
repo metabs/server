@@ -18,7 +18,7 @@ func NewRouter(log *zap.SugaredLogger) chi.Router {
 
 	r.Use(
 		profilingMiddleware(log),
-		middleware.Timeout(time.Millisecond*100),
+		middleware.Timeout(time.Millisecond*1000),
 		middleware.SetHeader("Content-Type", "application/json"),
 	)
 

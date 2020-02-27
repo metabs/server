@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/db"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
 	"google.golang.org/api/iterator"
 	"os"
 	"testing"
@@ -27,15 +28,19 @@ func TestMain(m *testing.M) {
 	}
 
 	status := godog.RunWithOptions("App", func(s *godog.Suite) {
-		db, err := db.New(context.Background())
+		dbc, err := db.New(context.Background())
 		if err != nil {
 			panic(err)
 		}
-		FeatureContext(s, db)
+		sv, err := jwt.New()
+		if err != nil {
+			panic(err)
+		}
+		FeatureContext(s, sv, dbc)
 	}, godog.Options{
-		Format:        "pretty",
-		Paths:         []string{"features"},
-		Randomize:     time.Now().UTC().UnixNano(),
+		Format: "pretty",
+		Paths:  []string{"features"},
+		//Randomize:     time.Now().UTC().UnixNano(),
 		StopOnFailure: stopOnFailure,
 	})
 
@@ -46,25 +51,28 @@ func TestMain(m *testing.M) {
 	os.Exit(status)
 }
 
-func FeatureContext(s *godog.Suite, db *firestore.Client) {
+func FeatureContext(s *godog.Suite, sv *jwt.SignerVerifier, db *firestore.Client) {
 	if _, err := db.Collection("Ping").Doc("0").Set(context.Background(), map[string]bool{"1": true}); err != nil {
 		panic(err)
 	}
 	s.AfterScenario(func(i interface{}, err error) {
-		if err := deleteCollection(db); err != nil {
+		if err := deleteCollections(db, "workspace"); err != nil {
+			panic(err)
+		}
+		if err := deleteCollections(db, "customer"); err != nil {
 			panic(err)
 		}
 	})
 	features.ServerIsUpAndRunning(s)
-	features.WorkspaceAPIs(s, db)
+	features.WorkspaceAPIs(s, sv, db)
 }
 
 // copied from google doc :)
-func deleteCollection(client *firestore.Client) error {
+func deleteCollections(client *firestore.Client, collectionName string ) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	docs := client.Collection("workspace").Documents(ctx)
+	docs := client.Collection(collectionName).Documents(ctx)
 
 	numDeleted := 0
 	batch := client.Batch()
