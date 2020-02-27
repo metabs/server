@@ -37,19 +37,28 @@ func WorkspaceAPIs(s *godog.Suite, db *firestore.Client) {
 	s.Step(`^the API must reply with a body containing:$`, f.theAPIMustReplyWithABodyContaining)
 	s.Step(`^the API must reply with a body containing an id$`, f.theAPIMustReplyWithABodyContainingAnId)
 	s.Step(`^the API must reply with a body containing an id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingAnIdAs)
-	s.Step(`^the API must reply with a body containing nil update date$`, f.theAPIMustReplyWithABodyContainingNilUpdateDate)
 	s.Step(`^the API must reply with a body containing a name as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingANameAs)
+	s.Step(`^the API must reply with a body containing nil update date$`, f.theAPIMustReplyWithABodyContainingNilUpdateDate)
 	s.Step(`^the API must reply with a body containing an creation date$`, f.theAPIMustReplyWithABodyContainingAnCreationDate)
 	s.Step(`^the API must reply with a body containing an empty list of collections$`, f.theAPIMustReplyWithABodyContainingAnEmptyListOfCollections)
 	s.Step(`^the API must reply with a body containing an update after create date$`, f.theAPIMustReplyWithABodyContainingAnUpdateDateAfterCreateDate)
-
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an id$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnId)
-	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a name as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingANameAs)
-	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an creation date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnCreationDate)
-	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing nil update date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingNilUpdateDate)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnIdAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a name as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingANameAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing nil update date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingNilUpdateDate)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an creation date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnCreationDate)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an update after create date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnUpdateDateAfterCreateDate)
 
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an id$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnId)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a title as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingATitleAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a description as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingADescriptionAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a icon as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAIconAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a link as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingALinkAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a creation date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingACreationDate)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing nil update date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingNilUpdateDate)
+
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnIdAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an update after create date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnUpdateAfterCreateDate)
 
 }
 
@@ -213,7 +222,7 @@ func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndex
 
 func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnUpdateDateAfterCreateDate(i int) error {
 
-	if !f.ws.Collections[i].Updated.After(f.ws.Created) {
+	if !f.ws.Collections[i].Updated.After(f.ws.Collections[i].Created) {
 		return fmt.Errorf("update date is wrong. Expected a after creation %v, Given: %v", f.ws.Collections[i].Created, f.ws.Collections[i].Updated)
 	}
 
@@ -236,6 +245,79 @@ func (f *workspaceFeature) anExistingWorkspace(data *gherkin.DocString) error {
 func (f *workspaceFeature) theAPIMustReplyWithABodyContaining(expectedData *gherkin.DocString) error {
 	if strings.Trim(string(f.body), "\n") != strings.Trim(expectedData.Content, "\n") {
 		return fmt.Errorf("workspace is wrong. Expected %s date, Given: %s", expectedData.Content, string(f.body))
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnId(collI, tabI int) error {
+	if _, err := uuid.Parse(string(f.ws.Collections[collI].Tabs[tabI].ID)); err != nil {
+		return fmt.Errorf("id is wrong. Expected an uuid back, Given: %s", f.ws.Collections[collI].Tabs[tabI].ID)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnIdAs(collI, tabI int, wantID string) error {
+	if string(f.ws.Collections[collI].Tabs[tabI].ID) != wantID {
+		return fmt.Errorf("id is wrong. Expected %s, Given: %s", wantID, f.ws.Collections[collI].Tabs[tabI].ID)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingATitleAs(collI, tabI int, wantTitle string) error {
+	if string(f.ws.Collections[collI].Tabs[tabI].Title) != wantTitle {
+		return fmt.Errorf("link is wrong. Expected %s, Given: %s", wantTitle, f.ws.Collections[collI].Tabs[tabI].Title)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingADescriptionAs(collI, tabI int, wantDesc string) error {
+	if string(f.ws.Collections[collI].Tabs[tabI].Description) != wantDesc {
+		return fmt.Errorf("link is wrong. Expected %s, Given: %s", wantDesc, f.ws.Collections[collI].Tabs[tabI].Description)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAIconAs(collI, tabI int, wantIcon string) error {
+	if string(f.ws.Collections[collI].Tabs[tabI].Icon) != wantIcon {
+		return fmt.Errorf("link is wrong. Expected %s, Given: %s", wantIcon, f.ws.Collections[collI].Tabs[tabI].Icon)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingALinkAs(collI, tabI int, wantLink string) error {
+	if string(f.ws.Collections[collI].Tabs[tabI].Link) != wantLink {
+		return fmt.Errorf("link is wrong. Expected %s, Given: %s", wantLink, f.ws.Collections[collI].Tabs[tabI].Link)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingACreationDate(collI, tabI int) error {
+	now := time.Now().Add(time.Second) // for safety
+	if f.ws.Collections[collI].Tabs[tabI].Created.IsZero() || f.ws.Collections[collI].Tabs[tabI].Created.After(now) {
+		return fmt.Errorf("creation date is wrong. Expected before than %v, Given: %v", now, f.ws.Collections[collI].Tabs[tabI].Created)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingNilUpdateDate(collI, tabI int) error {
+	if !f.ws.Collections[collI].Tabs[tabI].Updated.IsZero() {
+		return fmt.Errorf("update date is wrong. Expected a nil date, Given: %v", f.ws.Collections[collI].Tabs[tabI].Updated)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnUpdateAfterCreateDate(collI, tabI int) error {
+	if !f.ws.Collections[collI].Tabs[tabI].Updated.After(f.ws.Collections[collI].Tabs[tabI].Created) {
+		return fmt.Errorf("update date is wrong. Expected a after creation %v, Given: %v", f.ws.Collections[collI].Tabs[tabI].Created, f.ws.Collections[collI].Tabs[tabI].Updated)
 	}
 
 	return nil
