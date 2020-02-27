@@ -93,7 +93,11 @@ func login(repo customer.Repo, sv *jwt.SignerVerifier, log *zap.SugaredLogger) f
 			return
 		}
 
-		if _, err := w.Write(token); err != nil {
+		var resBody = struct {
+			Token string
+		}{Token: string(token)}
+
+		if err := json.NewEncoder(w).Encode(&resBody); err != nil {
 			logger.With("error", err).Error("could not write response")
 			w.WriteHeader(http.StatusInternalServerError)
 			return

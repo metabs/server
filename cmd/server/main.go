@@ -49,10 +49,15 @@ func main() {
 		logger.With("error", err).Fatal("could not create JWY signer verifier")
 	}
 
+	sender, err := email.New(logger)
+	if err != nil {
+		logger.With("error", err).Fatal("could not create email sender")
+	}
+
 	r := serverHTTP.NewRouter(logger)
 	r.Route("/", probe.NewRouter(db, logger))
 	r.Route("/workspaces", workspaceHTTP.NewRouter(&workspace.Repo{Client: db, Logger: logger}, sv, logger))
-	r.Route("/customers", customerHTTP.NewRouter(&customer.Repo{Client: db, Logger: logger}, sv, logger))
+	r.Route("/customers", customerHTTP.NewRouter(&customer.Repo{Client: db, Logger: logger}, sv, sender, logger))
 	srv := serverHTTP.New(r)
 
 	done := make(chan struct{}, 1)

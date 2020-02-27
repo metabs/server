@@ -6,6 +6,7 @@ type Status string
 const (
 	Activated    = "Activated"
 	NotActivated = "NotActivated"
+	PendingEmail = "PendingEmail"
 )
 
 // String returns a string representation of the active
@@ -15,6 +16,8 @@ func (a Status) String() string {
 		return "Activated"
 	case NotActivated:
 		return "Not activated"
+	case PendingEmail:
+		return "Pending Email"
 	}
-	return string(a)
+	return ""
 }

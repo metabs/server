@@ -2,9 +2,11 @@ package probe
 
 import (
 	"cloud.google.com/go/firestore"
+	"github.com/go-chi/chi/middleware"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 )
@@ -12,6 +14,7 @@ import (
 // NewRouter Return a function to use with an existing router
 func NewRouter(db *firestore.Client, log *zap.SugaredLogger) func(r chi.Router) {
 	return func(r chi.Router) {
+		r = r.With(middleware.Timeout(time.Millisecond*100))
 		r.Get("/liveness", liveness(db, log))
 		r.Get("/readiness", readiness(db, log))
 	}

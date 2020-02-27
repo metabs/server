@@ -1,6 +1,7 @@
 package http
 
 import (
+	"go.opencensus.io/trace"
 	"net/http"
 	"time"
 
@@ -19,7 +20,7 @@ func NewRouter(log *zap.SugaredLogger) chi.Router {
 	r.Use(
 		corsMiddleware(),
 		profilingMiddleware(log),
-		middleware.Timeout(time.Millisecond*1000),
+		middleware.Timeout(time.Second*10),
 		middleware.SetHeader("Content-Type", "application/json"),
 	)
 
@@ -37,6 +38,10 @@ func NewRouter(log *zap.SugaredLogger) chi.Router {
 func profilingMiddleware(log *zap.SugaredLogger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx, span := trace.StartSpan(r.Context(), "profilingMiddleware", trace.WithSpanKind(trace.SpanKindServer))
+			defer span.End()
+
+			r = r.WithContext(ctx)
 			rw := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			defer func() {
 				start := time.Now()

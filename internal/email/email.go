@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/email"
+	"github.com/metabs/server/email"
 	"go.uber.org/zap"
 	"os"
 )
