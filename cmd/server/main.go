@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/customer"
+	customerHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/customer/http"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace"
 	workspaceHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace/http"
 	"net/http"
@@ -38,12 +41,18 @@ func main() {
 	logger.Info("Application stopped.")
 	db, err := database.New(ctx)
 	if err != nil {
-		logger.With("error", err).Fatal("Could not connect to the database.")
+		logger.With("error", err).Fatal("could not connect to the database.")
+	}
+
+	sv, err := jwt.New()
+	if err != nil {
+		logger.With("error", err).Fatal("could not create JWY signer verifier")
 	}
 
 	r := serverHTTP.NewRouter(logger)
 	r.Route("/", probe.NewRouter(db, logger))
-	r.Route("/workspaces", workspaceHTTP.NewRouter(&workspace.Repo{Client: db, Logger: logger}, logger))
+	r.Route("/workspaces", workspaceHTTP.NewRouter(&workspace.Repo{Client: db, Logger: logger}, sv, logger))
+	r.Route("/customers", customerHTTP.NewRouter(&customer.Repo{Client: db, Logger: logger}, sv, logger))
 	srv := serverHTTP.New(r)
 
 	done := make(chan struct{}, 1)

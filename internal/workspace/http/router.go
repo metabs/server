@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"github.com/go-chi/chi"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
+	"strings"
 )
 
 type (
@@ -20,9 +23,9 @@ var workspaceCtxKey workspaceCtx = 0
 var collectionIDCtxKey collectionIDCtx = 0
 
 // NewRouter Return a function to use with an existing router
-func NewRouter(repo workspace.Repo, log *zap.SugaredLogger) func(r chi.Router) {
+func NewRouter(repo workspace.Repo, sv *jwt.SignerVerifier, log *zap.SugaredLogger) func(r chi.Router) {
 	return func(r chi.Router) {
-		r = r.With(jwtMiddleware(log))
+		r = r.With(jwtMiddleware(sv, log))
 		r.Post("/", add(repo, log))
 		r.Get("/", list(repo, log))
 		r.With(workspaceMiddleware(repo, "id", log)).Delete("/{id}", delete(repo, log))
@@ -43,7 +46,7 @@ func NewRouter(repo workspace.Repo, log *zap.SugaredLogger) func(r chi.Router) {
 	}
 }
 
-func jwtMiddleware(log *zap.SugaredLogger) func(next http.Handler) http.Handler {
+func jwtMiddleware(sv *jwt.SignerVerifier, log *zap.SugaredLogger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			ctx, span := trace.StartSpan(r.Context(), "jwtMiddleware")
@@ -51,12 +54,29 @@ func jwtMiddleware(log *zap.SugaredLogger) func(next http.Handler) http.Handler 
 
 			logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "jwtMiddleware")
 
-			// Silly middleware to power fake customer id
-			cID := workspace.CustomerID("1ae3a55d-2c69-4679-808e-1c7772405281")
-			logger = logger.With("customer_id", cID)
+			h := r.Header.Get("Authorization")
+			if !strings.HasPrefix(h, "Bearer ") {
+				logger.Warn("could not verify non bearer token")
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
 
-			logger.Info("TODO")
-			ctx = context.WithValue(ctx, workspace.CustomerID(""), cID)
+			h = strings.TrimPrefix(h, "Bearer ")
+			cID, cStatus, err := sv.Verify(h)
+			if err != nil {
+				logger.With("error", err).Warn("could not verify jwt token")
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+
+			if cStatus != customer.Activated {
+				logger.With("error", err).Warn("customer not active")
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			logger.With("customer_id", cID).Debug("authorized")
+
+			ctx = context.WithValue(ctx, workspace.CustomerID(""), workspace.CustomerID(cID.String()))
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		}
@@ -122,7 +142,7 @@ func collectionMiddleware(log *zap.SugaredLogger) func(next http.Handler) http.H
 			ctx, span := trace.StartSpan(r.Context(), "collectionMiddleware")
 			defer span.End()
 
-			logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "workspaceMiddleware")
+			logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "collectionMiddleware")
 
 			id, err := collection.NewID(chi.URLParam(r, "collection_id"))
 			if err != nil {

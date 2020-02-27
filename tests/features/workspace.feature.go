@@ -8,6 +8,9 @@ import (
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/gherkin"
 	"github.com/google/uuid"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
+	customerInt "github.com/unprogettosenzanomecheforseinizieremo/server/internal/customer"
+	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
 	workspaceInt "github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace"
 	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace"
 	"io/ioutil"
@@ -17,21 +20,32 @@ import (
 )
 
 type workspaceFeature struct {
-	db   *firestore.Client
-	res  *http.Response
-	ws   *workspace.Workspace
-	wss  []*workspace.Workspace
-	body []byte
+	db    *firestore.Client
+	sv    *jwt.SignerVerifier
+	res   *http.Response
+	ws    *workspace.Workspace
+	wss   []*workspace.Workspace
+	body  []byte
+	token []byte
 }
 
-func WorkspaceAPIs(s *godog.Suite, db *firestore.Client) {
+func WorkspaceAPIs(s *godog.Suite, sv *jwt.SignerVerifier, db *firestore.Client) {
 	f := &workspaceFeature{
 		db:  db,
+		sv:  sv,
 		res: &http.Response{},
 	}
+	s.BeforeScenario(func(_ interface{}) {
+		f.res = &http.Response{}
+		f.ws = &workspace.Workspace{}
+		f.wss = []*workspace.Workspace{}
+		f.body = nil
+		f.token = nil
+	})
 	s.Step(`^given the response body$`, f.givenResponseBody)
-	s.Step(`^given the response body as list$`, f.givenResponseBodyAsList)
 	s.Step(`^an existing workspace:$`, f.anExistingWorkspace)
+	s.Step(`^an authenticated customer:$`, f.anAuthenticatedCustomer)
+	s.Step(`^given the response body as list$`, f.givenResponseBodyAsList)
 	s.Step(`^an HTTP "([^"]*)" request "([^"]*)":$`, f.anHTTPRequestWithTheURIAndBody)
 	s.Step(`^the API must reply with a status code (\d+)$`, f.theAPIMustReplyWithAStatusCode)
 	s.Step(`^the API must reply with a body containing:$`, f.theAPIMustReplyWithABodyContaining)
@@ -40,6 +54,7 @@ func WorkspaceAPIs(s *godog.Suite, db *firestore.Client) {
 	s.Step(`^the API must reply with a body containing a name as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingANameAs)
 	s.Step(`^the API must reply with a body containing nil update date$`, f.theAPIMustReplyWithABodyContainingNilUpdateDate)
 	s.Step(`^the API must reply with a body containing an creation date$`, f.theAPIMustReplyWithABodyContainingAnCreationDate)
+	s.Step(`^the API must reply with a body containing a customer id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACustomerIdAs)
 	s.Step(`^the API must reply with a body containing an empty list of collections$`, f.theAPIMustReplyWithABodyContainingAnEmptyListOfCollections)
 	s.Step(`^the API must reply with a body containing an update after create date$`, f.theAPIMustReplyWithABodyContainingAnUpdateDateAfterCreateDate)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an id$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnId)
@@ -48,16 +63,14 @@ func WorkspaceAPIs(s *godog.Suite, db *firestore.Client) {
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing nil update date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingNilUpdateDate)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an creation date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnCreationDate)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing an update after create date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingAnUpdateDateAfterCreateDate)
-
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an id$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnId)
-	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a title as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingATitleAs)
-	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a description as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingADescriptionAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnIdAs)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a icon as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAIconAs)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a link as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingALinkAs)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a creation date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingACreationDate)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing nil update date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingNilUpdateDate)
-
-	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an id as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnIdAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a title as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingATitleAs)
+	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing a description as "([^"]*)"$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingADescriptionAs)
 	s.Step(`^the API must reply with a body containing a collections at index (\d+) containing a tab at index (\d+) containing an update after create date$`, f.theAPIMustReplyWithABodyContainingACollectionsAtIndexContainingATabAtIndexContainingAnUpdateAfterCreateDate)
 
 }
@@ -68,6 +81,9 @@ func (f *workspaceFeature) anHTTPRequestWithTheURIAndBody(method, uri string, bo
 		return fmt.Errorf("request creation failed. Due to: %s", err)
 	}
 
+	if string(f.token) != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", f.token))
+	}
 	client := http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
@@ -120,6 +136,14 @@ func (f *workspaceFeature) givenResponseBodyAsList() error {
 func (f *workspaceFeature) theAPIMustReplyWithABodyContainingAnId() error {
 	if _, err := uuid.Parse(string(f.ws.ID)); err != nil {
 		return fmt.Errorf("id is wrong. Expected an uuid back, Given: %s", f.ws.ID)
+	}
+
+	return nil
+}
+
+func (f *workspaceFeature) theAPIMustReplyWithABodyContainingACustomerIdAs(id string) error {
+	if f.ws.CustomerID.String() != id {
+		return fmt.Errorf("id is wrong. Expected %s, Given: %s", id, f.ws.CustomerID)
 	}
 
 	return nil
@@ -239,6 +263,24 @@ func (f *workspaceFeature) anExistingWorkspace(data *gherkin.DocString) error {
 		return fmt.Errorf("could not add workspace due to :%s", err)
 	}
 
+	return nil
+}
+
+func (f *workspaceFeature) anAuthenticatedCustomer(data *gherkin.DocString) error {
+	var c customer.Customer
+	if err := json.NewDecoder(strings.NewReader(data.Content)).Decode(&c); err != nil {
+		return fmt.Errorf("could not decode workspace. Due to: %s", err)
+	}
+	_, err := f.db.Collection(customerInt.CollectionName).Doc(c.Email.String()).Set(context.Background(), c)
+	if err != nil {
+		return fmt.Errorf("could not add customer due to :%s", err)
+	}
+	token, err := f.sv.Sign(c.ID, c.Email, c.Status, c.Created, c.Activated, c.Updated)
+	if err != nil {
+		return fmt.Errorf("could not sign customer due to :%s", err)
+	}
+
+	f.token = token
 	return nil
 }
 
