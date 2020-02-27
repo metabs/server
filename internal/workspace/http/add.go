@@ -21,7 +21,7 @@ func (r *addReq) UnmarshalJSON(data []byte) error {
 	}
 
 	var err error
-	if r.Name, err = workspace.NewName(string(req.Name)); err != nil {
+	if r.Name, err = workspace.NewName(req.Name.String()); err != nil {
 		return err
 	}
 

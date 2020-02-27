@@ -29,17 +29,17 @@ func TestNewEmail(t *testing.T) {
 
 	for _, r := range table {
 		t.Run(r.name, func(t *testing.T) {
-			email, err := NewEmail(r.raw)
+			e, err := NewEmail(r.raw)
 			if !errors.Is(err, r.wantErr) {
 				t.Error("could not match errors")
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
 
-			if string(email) != r.wantEmail {
+			if e.String() != r.wantEmail {
 				t.Error("could not match email")
-				t.Errorf("want: %s", r.wantErr)
-				t.Errorf("got : %s", err)
+				t.Errorf("want: %s", r.wantEmail)
+				t.Errorf("got : %s", e)
 			}
 		})
 	}

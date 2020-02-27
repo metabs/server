@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// ErrInvalidID is used when an invalid id is used
-var ErrInvalidID = errors.New("workspace: could not validate id")
+// ErrInvalidID is used when an invalid id is given
+var ErrInvalidID = errors.New("workspace: could not use invalid id")
 
 // ID represents a workspace id
 type ID string
@@ -15,8 +15,13 @@ type ID string
 // NewID return an id and an error back
 func NewID(id string) (ID, error) {
 	if _, err := uuid.Parse(id); err != nil {
-		return "", fmt.Errorf("%w: '%s' is not valide due to: %s", ErrInvalidID, id, err)
+		return "", fmt.Errorf("%w: %s", ErrInvalidID, err)
 	}
 
 	return ID(id), nil
+}
+
+// String returns a string representation of the id
+func (i ID) String() string {
+	return string(i)
 }

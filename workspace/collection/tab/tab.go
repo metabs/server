@@ -15,14 +15,8 @@ type Tab struct {
 	Updated     time.Time   `json:"updated,omitempty"`
 }
 
-// New returns a new tab created for the first time
-func New(
-	id ID,
-	title Title,
-	description Description,
-	icon Icon,
-	link Link,
-) *Tab {
+// New returns a tab created for the first time
+func New(id ID, title Title, description Description, icon Icon, link Link) *Tab {
 	return &Tab{
 		ID:          id,
 		Title:       title,
@@ -34,12 +28,7 @@ func New(
 }
 
 // Update updates a tab with new identifiers
-func (t *Tab) Update(
-	title Title,
-	description Description,
-	icon Icon,
-	link Link,
-) {
+func (t *Tab) Update(title Title, description Description, icon Icon, link Link) {
 	t.Title = title
 	t.Description = description
 	t.Icon = icon

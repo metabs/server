@@ -41,7 +41,7 @@ func TestNewDescription(t *testing.T) {
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantDesc {
+			if d.String() != r.wantDesc {
 				t.Error("could not match description")
 				t.Errorf("want: %s", r.wantDesc)
 				t.Errorf("got : %s", d)

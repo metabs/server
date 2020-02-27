@@ -11,9 +11,9 @@ const (
 	maxTitleLength = 50
 )
 
-// ErrInvalidTitle is used when an invalid title is used
 var (
-	ErrInvalidTitle  = errors.New("tab: could not validate title")
+	// Errors used when an invalid title is given
+	ErrInvalidTitle  = errors.New("tab: could not use invalid title")
 	ErrTitleTooShort = fmt.Errorf("%w: min length allowed is %d", ErrInvalidTitle, minTitleLength)
 	ErrTitleTooLong  = fmt.Errorf("%w: max length allowed is %d", ErrInvalidTitle, maxTitleLength)
 )
@@ -21,7 +21,7 @@ var (
 // Title represents a tab title
 type Title string
 
-// NewTitle return an title and an error back
+// NewTitle returns a title and an error back
 func NewTitle(d string) (Title, error) {
 	switch l := len(strings.TrimSpace(d)); {
 	case l < minTitleLength:
@@ -31,4 +31,8 @@ func NewTitle(d string) (Title, error) {
 	default:
 		return Title(d), nil
 	}
+}
+// String returns a string representation of the title
+func (t Title) String() string {
+	return string(t)
 }

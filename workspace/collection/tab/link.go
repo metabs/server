@@ -6,13 +6,13 @@ import (
 	"net/url"
 )
 
-// ErrInvalidLink is used when an invalid link is used
-var ErrInvalidLink = errors.New("tab: could not validate link")
+// ErrInvalidLink is used when an invalid link is given
+var ErrInvalidLink = errors.New("tab: could not use invalid link")
 
 // Link represents a tab link
 type Link string
 
-// NewLink return an link and an error back
+// NewLink returns a link and an error back
 func NewLink(i string) (Link, error) {
 	_, err := url.ParseRequestURI(i)
 	if err != nil {
@@ -20,4 +20,9 @@ func NewLink(i string) (Link, error) {
 	}
 
 	return Link(i), nil
+}
+
+// String returns a string representation of the link
+func (l Link) String() string {
+	return string(l)
 }

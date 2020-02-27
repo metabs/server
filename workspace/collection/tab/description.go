@@ -11,9 +11,9 @@ const (
 	maxDescriptionLength = 150
 )
 
-// ErrInvalidDescription is used when an invalid description is used
 var (
-	ErrInvalidDescription  = errors.New("tab: could not validate description")
+	// Errors used when an invalid description is given
+	ErrInvalidDescription  = errors.New("tab: could not use invalid description")
 	ErrDescriptionTooShort = fmt.Errorf("%w: min length allowed is %d", ErrInvalidDescription, minDescriptionLength)
 	ErrDescriptionTooLong  = fmt.Errorf("%w: max length allowed is %d", ErrInvalidDescription, maxDescriptionLength)
 )
@@ -21,7 +21,7 @@ var (
 // Description represents a tab description
 type Description string
 
-// NewDescription return an description and an error back
+// NewDescription returns a description and an error back
 func NewDescription(d string) (Description, error) {
 	switch l := len(strings.TrimSpace(d)); {
 	case l < minDescriptionLength:
@@ -31,4 +31,9 @@ func NewDescription(d string) (Description, error) {
 	default:
 		return Description(d), nil
 	}
+}
+
+// String returns a string representation of the description
+func (d Description) String() string {
+	return string(d)
 }

@@ -11,7 +11,7 @@ type Customer struct {
 	Created  time.Time `json:"created"`
 }
 
-// New returns a new customer created for the first time
+// New returns a customer created for the first time
 func New(id ID, email Email, password Password) *Customer {
 	return &Customer{
 		ID:       id,

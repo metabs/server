@@ -26,19 +26,19 @@ func (r *addTabReq) UnmarshalJSON(data []byte) error {
 	}
 
 	var err error
-	if r.Title, err = tab.NewTitle(string(req.Title)); err != nil {
+	if r.Title, err = tab.NewTitle(req.Title.String()); err != nil {
 		return err
 	}
 
-	if r.Description, err = tab.NewDescription(string(req.Description)); err != nil {
+	if r.Description, err = tab.NewDescription(req.Description.String()); err != nil {
 		return err
 	}
 
-	if r.Icon, err = tab.NewIcon(string(req.Icon)); err != nil {
+	if r.Icon, err = tab.NewIcon(req.Icon.String()); err != nil {
 		return err
 	}
 
-	if r.Link, err = tab.NewLink(string(req.Link)); err != nil {
+	if r.Link, err = tab.NewLink(req.Link.String()); err != nil {
 		return err
 	}
 
