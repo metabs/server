@@ -16,12 +16,8 @@ type Workspace struct {
 	Updated     time.Time                `json:"updated,omitempty"`
 }
 
-// New returns a new workspace created for the first time
-func New(
-	id ID,
-	name Name,
-	customerID CustomerID,
-) *Workspace {
+// New returns a workspace created for the first time
+func New(id ID, name Name, customerID CustomerID) *Workspace {
 	return &Workspace{
 		ID:          id,
 		Name:        name,
@@ -37,13 +33,13 @@ func (w *Workspace) Rename(name Name) {
 	w.Updated = time.Now()
 }
 
-// AddCollections add a collection to the workspace
+// AddCollections add a collection
 func (w *Workspace) AddCollections(collections ...*collection.Collection) {
 	w.Collections = append(w.Collections, collections...)
 	w.Updated = time.Now()
 }
 
-// RemoveCollection removes a collection if exists
+// RemoveCollection removes a collection if it exists
 func (w *Workspace) RemoveCollection(id collection.ID) bool {
 	for i, coll := range w.Collections {
 		if coll.ID == id {
@@ -58,7 +54,7 @@ func (w *Workspace) RemoveCollection(id collection.ID) bool {
 	return false
 }
 
-// RenameCollection finds a collection by id and renames it
+// RenameCollection renames a collection if it exists
 func (w *Workspace) RenameCollection(id collection.ID, name collection.Name) bool {
 	for _, coll := range w.Collections {
 		if coll.ID == id {
@@ -71,7 +67,7 @@ func (w *Workspace) RenameCollection(id collection.ID, name collection.Name) boo
 	return false
 }
 
-// AddTabs adds a tab to a collection
+// AddTabs adds tabs to a collection
 func (w *Workspace) AddTabs(id collection.ID, tabs ...*tab.Tab) bool {
 	for _, coll := range w.Collections {
 		if coll.ID == id {
@@ -84,6 +80,7 @@ func (w *Workspace) AddTabs(id collection.ID, tabs ...*tab.Tab) bool {
 	return false
 }
 
+// RemoveTab removes a tab from a collection if it exists
 func (w *Workspace) RemoveTab(id tab.ID, collID collection.ID) bool {
 	for _, coll := range w.Collections {
 		if coll.ID == collID {
@@ -113,6 +110,7 @@ func (w *Workspace) UpdateTab(t *tab.Tab, collID collection.ID) bool {
 	return false
 }
 
+// FindTab returns a tab from a collection if it exists
 func (w *Workspace) FindTab(id tab.ID, collID collection.ID) (*tab.Tab, bool) {
 	for _, coll := range w.Collections {
 		if coll.ID == collID {

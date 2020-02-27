@@ -35,7 +35,7 @@ func TestNewID(t *testing.T) {
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantID {
+			if d.String() != r.wantID {
 				t.Error("could not match ID")
 				t.Errorf("want: %s", r.wantID)
 				t.Errorf("got : %s", d)

@@ -29,16 +29,16 @@ func TestNewCustomerID(t *testing.T) {
 
 	for _, r := range table {
 		t.Run(r.name, func(t *testing.T) {
-			d, err := NewCustomerID(r.raw)
+			i, err := NewCustomerID(r.raw)
 			if !errors.Is(err, r.wantErr) {
 				t.Error("could not match errors")
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantCustomerID {
+			if i.String() != r.wantCustomerID {
 				t.Error("could not match customer id")
 				t.Errorf("want: %s", r.wantCustomerID)
-				t.Errorf("got : %s", d)
+				t.Errorf("got : %s", i)
 			}
 		})
 	}

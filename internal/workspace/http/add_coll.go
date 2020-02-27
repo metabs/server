@@ -21,7 +21,7 @@ func (r *addCollectionReq) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	var err error
-	if r.Name, err = collection.NewName(string(req.Name)); err != nil {
+	if r.Name, err = collection.NewName(req.Name.String()); err != nil {
 		return err
 	}
 

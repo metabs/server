@@ -35,16 +35,16 @@ func TestNewTitle(t *testing.T) {
 
 	for _, r := range table {
 		t.Run(r.name, func(t *testing.T) {
-			d, err := NewTitle(r.raw)
+			tit, err := NewTitle(r.raw)
 			if !errors.Is(err, r.wantErr) {
 				t.Error("could not match errors")
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantTitle {
+			if tit.String() != r.wantTitle {
 				t.Error("could not match title")
 				t.Errorf("want: %s", r.wantTitle)
-				t.Errorf("got : %s", d)
+				t.Errorf("got : %s", tit)
 			}
 		})
 	}

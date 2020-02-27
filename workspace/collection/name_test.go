@@ -35,16 +35,16 @@ func TestNewName(t *testing.T) {
 
 	for _, r := range table {
 		t.Run(r.name, func(t *testing.T) {
-			d, err := NewName(r.raw)
+			n, err := NewName(r.raw)
 			if !errors.Is(err, r.wantErr) {
 				t.Error("could not match errors")
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantName {
+			if n.String() != r.wantName {
 				t.Error("could not match name")
 				t.Errorf("want: %s", r.wantName)
-				t.Errorf("got : %s", d)
+				t.Errorf("got : %s", n)
 			}
 		})
 	}

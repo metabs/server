@@ -14,7 +14,7 @@ type Collection struct {
 	Updated time.Time  `json:"updated,omitempty"`
 }
 
-// New returns a new collection created for the first time
+// New returns a collection created for the first time
 func New(id ID, name Name) *Collection {
 	return &Collection{
 		ID:      id,
@@ -36,7 +36,7 @@ func (c *Collection) AddTabs(tabs ...*tab.Tab) {
 	c.Updated = time.Now()
 }
 
-// RemoveTab removes a tab if exists
+// RemoveTab removes a tab if it exists
 func (c *Collection) RemoveTab(id tab.ID) bool {
 	for i, t := range c.Tabs {
 		if t.ID == id {
@@ -51,7 +51,7 @@ func (c *Collection) RemoveTab(id tab.ID) bool {
 	return false
 }
 
-// UpdateTab updates tab
+// FindTab returns a tab if it exists
 func (c *Collection) FindTab(id tab.ID) (*tab.Tab, bool) {
 	for _, t := range c.Tabs {
 		if t.ID == id {
@@ -62,7 +62,7 @@ func (c *Collection) FindTab(id tab.ID) (*tab.Tab, bool) {
 	return nil, false
 }
 
-// UpdateTab updates tab
+// UpdateTab updates a tab if it exists
 func (c *Collection) UpdateTab(t *tab.Tab) bool {
 	for i, tb := range c.Tabs {
 		if tb.ID == t.ID {

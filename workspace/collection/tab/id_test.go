@@ -29,16 +29,16 @@ func TestNewID(t *testing.T) {
 
 	for _, r := range table {
 		t.Run(r.name, func(t *testing.T) {
-			d, err := NewID(r.raw)
+			i, err := NewID(r.raw)
 			if !errors.Is(err, r.wantErr) {
 				t.Error("could not match errors")
 				t.Errorf("want: %s", r.wantErr)
 				t.Errorf("got : %s", err)
 			}
-			if string(d) != r.wantID {
+			if i.String() != r.wantID {
 				t.Error("could not match ID")
 				t.Errorf("want: %s", r.wantID)
-				t.Errorf("got : %s", d)
+				t.Errorf("got : %s", i)
 			}
 		})
 	}

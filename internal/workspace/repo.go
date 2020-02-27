@@ -49,7 +49,7 @@ func (r *Repo) List(ctx context.Context, cID workspace.CustomerID) ([]*workspace
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "customer_id", cID, "action", "List")
 
-	docs := r.Client.Collection(CollectionName).Where("CustomerID", "==", string(cID)).Documents(ctx)
+	docs := r.Client.Collection(CollectionName).Where("CustomerID", "==", cID.String()).Documents(ctx)
 	var wss = make([]*workspace.Workspace, 0)
 	for {
 		doc, err := docs.Next()
@@ -80,7 +80,7 @@ func (r *Repo) Get(ctx context.Context, id workspace.ID) (*workspace.Workspace, 
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", id, "action", "Get")
 
-	doc, err := r.Client.Collection(CollectionName).Doc(string(id)).Get(ctx)
+	doc, err := r.Client.Collection(CollectionName).Doc(id.String()).Get(ctx)
 	switch {
 	case status.Code(err) == codes.NotFound:
 		logger.With("error", err).Info("document not found")
@@ -107,7 +107,7 @@ func (r *Repo) Add(ctx context.Context, ws *workspace.Workspace) error {
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", ws.ID, "action", "Add")
 
-	_, err := r.Client.Collection(CollectionName).Doc(string(ws.ID)).Set(ctx, ws)
+	_, err := r.Client.Collection(CollectionName).Doc(ws.ID.String()).Set(ctx, ws)
 	if err != nil {
 		logger.With("error", err).Error("could not set document")
 		return fmt.Errorf("%w:%s", workspace.ErrRepoAdd, err)
@@ -123,7 +123,7 @@ func (r *Repo) Delete(ctx context.Context, id workspace.ID) error {
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", id, "action", "Delete")
 	
-	if _, err := r.Client.Collection(CollectionName).Doc(string(id)).Delete(ctx); err != nil {
+	if _, err := r.Client.Collection(CollectionName).Doc(id.String()).Delete(ctx); err != nil {
 		logger.With("error", err).Error("could not delete document")
 		return fmt.Errorf("%w:%s", workspace.ErrRepoDelete, err)
 	}

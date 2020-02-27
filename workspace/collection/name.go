@@ -11,9 +11,9 @@ const (
 	maxNameLength = 50
 )
 
-// ErrInvalidName is used when an invalid name is used
 var (
-	ErrInvalidName  = errors.New("collection: could not validate name")
+	// Errors used when an invalid name is given
+	ErrInvalidName  = errors.New("collection: could not use invalid name")
 	ErrNameTooShort = fmt.Errorf("%w: min length allowed is %d", ErrInvalidName, minNameLength)
 	ErrNameTooLong  = fmt.Errorf("%w: max length allowed is %d", ErrInvalidName, maxNameLength)
 )
@@ -21,7 +21,7 @@ var (
 // Name represents a collection name
 type Name string
 
-// NewName return an name and an error back
+// NewName returns an name and an error back
 func NewName(d string) (Name, error) {
 	switch l := len(strings.TrimSpace(d)); {
 	case l < minNameLength:
@@ -31,4 +31,9 @@ func NewName(d string) (Name, error) {
 	default:
 		return Name(d), nil
 	}
+}
+
+// String returns a string representation of the name
+func (n Name) String() string {
+	return string(n)
 }

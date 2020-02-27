@@ -8,13 +8,15 @@ import (
 )
 
 var (
-	//Errors that can be used from the repository
-	ErrRepoNextID = errors.New("workspace: could not retrieve next id for the workspace")
-	ErrRepoList   = errors.New("workspace: could not list the workspaces")
-	ErrNotFound   = errors.New("workspace: could not find the workspace")
-	ErrRepoGet    = errors.New("workspace: could not get the workspace")
-	ErrRepoAdd    = errors.New("workspace: could not add the workspace")
-	ErrRepoDelete = errors.New("workspace: could not delete the workspace")
+	//Errors returned by the repository
+	ErrRepoNextID           = errors.New("workspace: could not retrieve next workspace id")
+	ErrRepoNextCollectionID = errors.New("workspace: could not retrieve collection next id")
+	ErrRepoNextTabID        = errors.New("workspace: could not retrieve next tab id")
+	ErrRepoList             = errors.New("workspace: could not list the workspaces")
+	ErrNotFound             = errors.New("workspace: could not find the workspace")
+	ErrRepoGet              = errors.New("workspace: could not get the workspace")
+	ErrRepoAdd              = errors.New("workspace: could not add the workspace")
+	ErrRepoDelete           = errors.New("workspace: could not delete the workspace")
 )
 
 // Repo represents the persistence layer for the workspace aggregate

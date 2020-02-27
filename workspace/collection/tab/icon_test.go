@@ -36,7 +36,7 @@ func TestNewIcon(t *testing.T) {
 				t.Errorf("got : %s", err)
 			}
 
-			if string(i) != r.wantIcon {
+			if i.String() != r.wantIcon {
 				t.Error("could not match icon")
 				t.Errorf("want: %s", r.wantIcon)
 				t.Errorf("got : %s", i)
