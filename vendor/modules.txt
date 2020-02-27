@@ -54,6 +54,11 @@ github.com/jstemmer/go-junit-report/parser
 # github.com/magefile/mage v1.9.0
 github.com/magefile/mage/mg
 github.com/magefile/mage/sh
+# github.com/sendgrid/rest v2.4.1+incompatible
+github.com/sendgrid/rest
+# github.com/sendgrid/sendgrid-go v3.5.0+incompatible
+github.com/sendgrid/sendgrid-go
+github.com/sendgrid/sendgrid-go/helpers/mail
 # go.opencensus.io v0.22.3
 go.opencensus.io
 go.opencensus.io/internal

@@ -9,6 +9,8 @@ require (
 	github.com/gbrlsnchs/jwt/v3 v3.0.0-rc.1
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/google/uuid v1.1.1
+	github.com/sendgrid/rest v2.4.1+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
 	go.opencensus.io v0.22.3
 	go.uber.org/zap v1.14.0
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
