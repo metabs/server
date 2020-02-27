@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/metabs/server/customer"
 	"github.com/metabs/server/internal/jwt"
 	"github.com/metabs/server/workspace"
@@ -12,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type (
@@ -25,7 +27,7 @@ var collectionIDCtxKey collectionIDCtx = 0
 // NewRouter Return a function to use with an existing router
 func NewRouter(repo workspace.Repo, sv *jwt.SignerVerifier, log *zap.SugaredLogger) func(r chi.Router) {
 	return func(r chi.Router) {
-		r = r.With(jwtMiddleware(sv, log))
+		r = r.With(middleware.Timeout(time.Millisecond*150), jwtMiddleware(sv, log))
 		r.Post("/", add(repo, log))
 		r.Get("/", list(repo, log))
 		r.With(workspaceMiddleware(repo, "id", log)).Delete("/{id}", delete(repo, log))

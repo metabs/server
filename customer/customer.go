@@ -49,14 +49,38 @@ func (c *Customer) Activate(hash string) bool {
 	return true
 }
 
+// GenerateChangePasswordHash changes the customer password
+func (c *Customer) GenerateChangePasswordHash() {
+	c.ChangePasswordHash = uuid.New().String()
+	c.Updated = time.Now()
+}
+
 // ChangePassword changes the customer password
-func (c *Customer) ChangePassword(p Password) {
+func (c *Customer) ChangePassword(p Password, hash string) bool {
+	if hash != c.ChangePasswordHash || c.ChangePasswordHash == "" {
+		return false
+	}
+	c.ChangePasswordHash = ""
 	c.Password = p
+	c.Updated = time.Now()
+	return true
+}
+
+// GenerateChangeEmailHash changes the customer password
+func (c *Customer) GenerateChangeEmailHash() {
+	c.ChangeEmailHash = uuid.New().String()
 	c.Updated = time.Now()
 }
 
 // ChangeEmail changes the customer email
-func (c *Customer) ChangeEmail(e Email) {
+func (c *Customer) ChangeEmail(e Email, hash string) bool {
+	if hash != c.ChangeEmailHash || c.ChangeEmailHash == "" {
+		return false
+	}
+	c.ChangeEmailHash = ""
 	c.Email = e
+	c.Status = PendingEmail
+	c.ActivateHash = uuid.New().String()
 	c.Updated = time.Now()
+	return true
 }

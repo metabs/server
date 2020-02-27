@@ -3,19 +3,20 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"github.com/go-chi/chi"
 	"github.com/metabs/server/customer"
+	"github.com/metabs/server/email"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
 )
 
-type signUpReq struct {
-	Email    customer.Email    `json:"email"`
-	Password customer.Password `json:"password"`
+type changeEmailReq struct {
+	Email customer.Email `json:"email"`
 }
 
-func (r *signUpReq) UnmarshalJSON(data []byte) error {
-	type clone signUpReq
+func (r *changeEmailReq) UnmarshalJSON(data []byte) error {
+	type clone changeEmailReq
 	var req clone
 	if err := json.Unmarshal(data, &req); err != nil {
 		return err
@@ -25,40 +26,37 @@ func (r *signUpReq) UnmarshalJSON(data []byte) error {
 	if r.Email, err = customer.NewEmail(req.Email.String()); err != nil {
 		return err
 	}
-	if r.Password, err = customer.NewPassword(req.Password.String()); err != nil {
-		return err
-	}
 
 	return nil
 }
 
-func signUp(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogger) func(w http.ResponseWriter, r *http.Request) {
+func changeEmail(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, span := trace.StartSpan(r.Context(), "sign up")
+		ctx, span := trace.StartSpan(r.Context(), "changeEmail")
 		defer span.End()
 
-		logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "sign up")
+		logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "changeEmail")
 
-		id, err := repo.NextID(ctx)
+		id, err := customer.NewID(chi.URLParam(r, "id"))
 		if err != nil {
-			logger.With("error", err).Error("could not get next id")
-			w.WriteHeader(http.StatusInternalServerError)
+			logger.With("error", err).Info("could not create id")
+			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-
 		logger = logger.With("id", id)
 
-		var rb signUpReq
+		var rb changeEmailReq
 		switch err := json.NewDecoder(r.Body).Decode(&rb); {
-		case errors.Is(err, customer.ErrInvalidEmail) || errors.Is(err, customer.ErrInvalidPassword):
-			w.WriteHeader(http.StatusBadRequest)
+		case errors.Is(err, customer.ErrInvalidEmail):
+			w.WriteHeader(http.StatusUnauthorized)
+
 			if _, err2 := w.Write([]byte(err.Error())); err2 != nil {
 				logger.With("error", err, "error_2", err2).Error("could not write response")
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			logger.With("error", err, "email", rb.Email).Info("bad request")
+			logger.With("error", err, "request", rb).Info("bad request")
 			return
 
 		case err != nil:
@@ -79,16 +77,28 @@ func signUp(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogger) fu
 			return
 		}
 
-		c := customer.New(id, rb.Email, rb.Password)
+		c, err := repo.Get(ctx, id)
+		if err != nil {
+			logger.With("error", err).Warn("could not find customer")
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if !c.ChangeEmail(rb.Email, chi.URLParam(r, "hash")) {
+			logger.With("error", err).Warn("could not change email")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if err := sender.SendActivationEmail(ctx, c.Email.String(), c.ID.String(), c.ActivateHash); err != nil {
+			logger.With("error", err).Error("could not send email")
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
 		if err := repo.Add(ctx, c); err != nil {
 			logger.With("error", err).Error("could not add customer")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		}
-
-		// TODO: when not a MVP use a queue
-		if err := sender.SendActivationEmail(ctx, c.Email.String(), c.ID.String(), c.ActivateHash); err != nil {
-			logger.With("error", err).Error("could not send email")
 		}
 
 		if err := json.NewEncoder(w).Encode(c); err != nil {
