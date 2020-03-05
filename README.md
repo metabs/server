@@ -31,8 +31,11 @@ Other directories:
 ## Run tests
 
 - cp .env.dist .env
+- cp service-account.dist.json service-account.json
 - make tests
 
 ## Run server
 
+- cp .env.dist .env
+- cp service-account.dist.json service-account.json
 - docker-compose up -d
