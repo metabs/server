@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/google/uuid"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
+	"github.com/metabs/server/customer"
 	"os"
 	"time"
 )

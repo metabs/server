@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/db"
+	"github.com/metabs/server/internal/db"
 )
 
 func main() {

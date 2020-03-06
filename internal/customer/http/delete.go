@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
+	"github.com/metabs/server/customer"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"

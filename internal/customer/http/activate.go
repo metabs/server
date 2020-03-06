@@ -3,7 +3,7 @@ package http
 import (
 	"encoding/json"
 	"github.com/go-chi/chi"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
+	"github.com/metabs/server/customer"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"

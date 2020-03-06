@@ -2,8 +2,8 @@ package http
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
+	"github.com/metabs/server/customer"
+	"github.com/metabs/server/internal/jwt"
 	"go.uber.org/zap"
 )
 

@@ -1,4 +1,4 @@
-module github.com/unprogettosenzanomecheforseinizieremo/server
+module github.com/metabs/server
 
 go 1.13
 
