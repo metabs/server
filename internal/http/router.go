@@ -17,6 +17,7 @@ func NewRouter(log *zap.SugaredLogger) chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(
+		corsMiddleware(),
 		profilingMiddleware(log),
 		middleware.Timeout(time.Millisecond*1000),
 		middleware.SetHeader("Content-Type", "application/json"),
@@ -49,6 +50,17 @@ func profilingMiddleware(log *zap.SugaredLogger) func(next http.Handler) http.Ha
 					Info("router: api call done")
 			}()
 			next.ServeHTTP(rw, r)
+		})
+	}
+}
+
+func corsMiddleware() func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == http.MethodOptions {
+				return
+			}
+			next.ServeHTTP(w, r)
 		})
 	}
 }
