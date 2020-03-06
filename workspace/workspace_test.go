@@ -1,7 +1,7 @@
 package workspace
 
 import (
-	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection"
+	"github.com/metabs/server/workspace/collection"
 	"testing"
 )
 

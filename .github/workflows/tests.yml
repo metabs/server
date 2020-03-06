@@ -11,17 +11,10 @@ jobs:
         with:
           go-version: 1.13.x
       - name: Prepare env files
-        run: cp .env.dist .env
+        run: |
+          cp .env.local.dist .env.local
+          cp .env.dist .env
       - name: Write service account
         run: echo ${{ secrets.SERVICE_ACCOUNT_NO }} > service-account.json
       - name: Run tests
-        run: make tests
-        env:
-          GO111MODULE: on
-          GOFLAGS: -mod=vendor
-          FIRESTORE_EMULATOR_HOST: localhost:8090
-          FIRESTORE_PROJECT_ID: unprogettosenzanomecheforseinizieremo
-          JWT_SECRET: a_strong_secret
-          JWT_ISSUER: unprogettosenzanomecheforseinizieremo
-          JWT_AUDIENCE: unprogettosenzanomecheforseinizieremo
-          JWT_SUBJECT: unprogettosenzanomecheforseinizieremo
+        run: env $(cat .env.local | xargs) make tests

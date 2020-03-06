@@ -3,9 +3,9 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/workspace/collection/tab"
+	"github.com/metabs/server/workspace"
+	"github.com/metabs/server/workspace/collection"
+	"github.com/metabs/server/workspace/collection/tab"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"

@@ -1,6 +1,6 @@
 # Server
 
-Server for unprogettosenzanomecheforseinizieremo.
+Server for metabs
 
 Packages:
  
@@ -31,8 +31,9 @@ Other directories:
 ## Run tests
 
 - cp .env.dist .env
+- cp .env.local.dist .env.local
 - cp service-account.dist.json service-account.json
-- make tests
+- env $(cat .env.local | xargs) make tests
 
 ## Run server
 

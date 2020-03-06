@@ -2,22 +2,22 @@ package main
 
 import (
 	"context"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/customer"
-	customerHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/customer/http"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace"
-	workspaceHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/workspace/http"
+	"github.com/metabs/server/internal/customer"
+	customerHTTP "github.com/metabs/server/internal/customer/http"
+	"github.com/metabs/server/internal/jwt"
+	"github.com/metabs/server/internal/workspace"
+	workspaceHTTP "github.com/metabs/server/internal/workspace/http"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/log"
+	"github.com/metabs/server/internal/log"
 
-	database "github.com/unprogettosenzanomecheforseinizieremo/server/internal/db"
-	serverHTTP "github.com/unprogettosenzanomecheforseinizieremo/server/internal/http"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/probe"
+	database "github.com/metabs/server/internal/db"
+	serverHTTP "github.com/metabs/server/internal/http"
+	"github.com/metabs/server/internal/probe"
 )
 
 func main() {

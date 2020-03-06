@@ -17,6 +17,15 @@ services:
       timeout: 1s
       retries: 3
 
+  migration:
+    image: golang:1.13.4
+    working_dir: /go/src/github.com/metabs/server
+    volumes:
+      - ./:/go/src/github.com/metabs/server
+    env_file:
+      - .env
+    entrypoint: "go run cmd/migration/main.go"
+
   firestore:
     image: mtlynch/firestore-emulator
     env_file:

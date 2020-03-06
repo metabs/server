@@ -4,14 +4,14 @@ import (
 	"cloud.google.com/go/firestore"
 	"context"
 	"flag"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/db"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
+	"github.com/metabs/server/internal/db"
+	"github.com/metabs/server/internal/jwt"
 	"google.golang.org/api/iterator"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/unprogettosenzanomecheforseinizieremo/server/tests/features"
+	"github.com/metabs/server/tests/features"
 
 	"github.com/cucumber/godog"
 )

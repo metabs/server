@@ -3,8 +3,8 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/customer"
-	"github.com/unprogettosenzanomecheforseinizieremo/server/internal/jwt"
+	"github.com/metabs/server/customer"
+	"github.com/metabs/server/internal/jwt"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
