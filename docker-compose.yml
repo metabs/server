@@ -16,6 +16,8 @@ services:
       interval: 5s
       timeout: 1s
       retries: 3
+    depends_on:
+      - firestore
 
   migration:
     image: golang:1.13.4

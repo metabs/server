@@ -3,7 +3,6 @@ package customer
 import (
 	"cloud.google.com/go/firestore"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/metabs/server/customer"
@@ -33,29 +32,7 @@ func (r *Repo) Get(ctx context.Context, id customer.ID) (*customer.Customer, err
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", id, "action", "Get")
 
-	doc, err := r.findByID(ctx, id)
-	if err != nil {
-		logger.With("error", err).Error("could not find document")
-		return nil, fmt.Errorf("%w:%s", customer.ErrRepoGet, err)
-	}
-
-	c := &customer.Customer{}
-	if err := doc.DataTo(c); err != nil {
-		logger.With("error", err).Errorf("could not map document")
-		return nil, fmt.Errorf("%w:%s", customer.ErrRepoGet, err)
-	}
-
-	logger.Debug("gotten")
-	return c, nil
-}
-
-func (r *Repo) GetByEmail(ctx context.Context, email customer.Email) (*customer.Customer, error) {
-	ctx, span := trace.StartSpan(ctx, "GetByEmail")
-	defer span.End()
-
-	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "email", email, "action", "GetByEmail")
-
-	doc, err := r.Client.Collection(CollectionName).Doc(email.String()).Get(ctx)
+	doc, err := r.Client.Collection(CollectionName).Doc(id.String()).Get(ctx)
 	switch {
 	case status.Code(err) == codes.NotFound:
 		logger.With("error", err).Info("document not found")
@@ -76,13 +53,41 @@ func (r *Repo) GetByEmail(ctx context.Context, email customer.Email) (*customer.
 	return c, nil
 }
 
+func (r *Repo) GetByEmail(ctx context.Context, email customer.Email) (*customer.Customer, error) {
+	ctx, span := trace.StartSpan(ctx, "GetByEmail")
+	defer span.End()
+
+	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "email", email, "action", "GetByEmail")
+
+	switch docs, err := r.Client.Collection(CollectionName).Where("Email", "==", email.String()).Documents(ctx).GetAll(); {
+	case err != nil:
+		logger.With("error", err).Error("could not find document")
+		return nil, fmt.Errorf("%w:%s", customer.ErrRepoGet, err)
+	case len(docs) == 0:
+		logger.With("error", err).Error("could not find document, none email found")
+		return nil, customer.ErrNotFound
+	case len(docs) != 1:
+		logger.With("error", err).Error("could not return document, more than one email found")
+		return nil, fmt.Errorf("%w:%s", customer.ErrRepoGet, "more than one doc found")
+	default:
+		c := &customer.Customer{}
+		if err := docs[0].DataTo(c); err != nil {
+			logger.With("error", err).Errorf("could not map document")
+			return nil, fmt.Errorf("%w:%s", customer.ErrRepoGet, err)
+		}
+
+		logger.Debug("gotten")
+		return c, nil
+	}
+}
+
 func (r *Repo) Add(ctx context.Context, c *customer.Customer) error {
 	ctx, span := trace.StartSpan(ctx, "Add")
 	defer span.End()
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", c.ID, "action", "Add")
 
-	_, err := r.Client.Collection(CollectionName).Doc(c.Email.String()).Set(ctx, c)
+	_, err := r.Client.Collection(CollectionName).Doc(c.ID.String()).Set(ctx, c)
 	if err != nil {
 		logger.With("error", err).Error("could not set document")
 		return fmt.Errorf("%w:%s", customer.ErrRepoAdd, err)
@@ -98,43 +103,10 @@ func (r *Repo) Delete(ctx context.Context, id customer.ID) error {
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", id, "action", "Delete")
 
-	doc, err := r.findByID(ctx, id)
-	if err != nil {
-		logger.With("error", err).Error("could not find document")
-		return fmt.Errorf("%w:%s", customer.ErrRepoDelete, err)
-	}
-
-	email, ok := doc.Data()["Email"].(string)
-	if !ok {
-		logger.With("error", err).Error("could not delete document, more than one id found")
-		return fmt.Errorf("%w:%s", customer.ErrRepoDelete, "could not transform email")
-	}
-
-	if _, err := r.Client.Collection(CollectionName).Doc(email).Delete(ctx); err != nil {
+	if _, err := r.Client.Collection(CollectionName).Doc(id.String()).Delete(ctx); err != nil {
 		logger.With("error", err).Error("could not delete document")
 		return fmt.Errorf("%w:%s", customer.ErrRepoAdd, err)
 	}
 
 	return nil
-}
-
-func (r *Repo) findByID(ctx context.Context, id customer.ID) (*firestore.DocumentSnapshot, error) {
-	ctx, span := trace.StartSpan(ctx, "findByID")
-	defer span.End()
-
-	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", id, "action", "findByID")
-
-	switch docs, err := r.Client.Collection(CollectionName).Where("ID", "==", id.String()).Documents(ctx).GetAll(); {
-	case err != nil:
-		logger.With("error", err).Error("could not find document")
-		return nil, err
-	case len(docs) == 0:
-		logger.With("error", err).Error("could not find document, none id found")
-		return nil, errors.New("no doc found")
-	case len(docs) != 1:
-		logger.With("error", err).Error("could not return document, more than one id found")
-		return nil, errors.New("more than one doc found")
-	default:
-		return docs[0], nil
-	}
 }

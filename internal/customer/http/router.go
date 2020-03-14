@@ -19,12 +19,13 @@ func NewRouter(repo customer.Repo, sv *jwt.SignerVerifier, sender *email.Sender,
 	return func(r chi.Router) {
 		r = r.With(middleware.Timeout(time.Second * 2))
 		r.Post("/", signUp(repo, sender, log))
+		r.Post("/resend", resendConfirmation(repo, sender, log))
 		r.Patch("/{id}/activate/{hash}", activate(repo, log))
 		r.Patch("/{id}/password/{hash}", changePassword(repo, log))
 		r.Patch("/{id}/email/{hash}", changeEmail(repo, sender, log))
-		r.Post("/{id}/password", newPassword(repo, sender, log))
+		r.Post("/{id}/password", resetPassword(repo, sender, log))
 		r.Post("/{id}/email", newEmail(repo, sender, log))
 		r.Post("/login", login(repo, sv, log))
-		r.Delete("/{id}", delete(repo, log))
+		r.Delete("/non_working_api", delete(repo, log))
 	}
 }

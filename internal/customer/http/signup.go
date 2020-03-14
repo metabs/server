@@ -3,7 +3,9 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/metabs/server/customer"
+	"github.com/metabs/server/email"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
@@ -52,7 +54,7 @@ func signUp(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogger) fu
 		switch err := json.NewDecoder(r.Body).Decode(&rb); {
 		case errors.Is(err, customer.ErrInvalidEmail) || errors.Is(err, customer.ErrInvalidPassword):
 			w.WriteHeader(http.StatusBadRequest)
-			if _, err2 := w.Write([]byte(err.Error())); err2 != nil {
+			if _, err2 := w.Write([]byte(fmt.Sprintf(`{"error":"%s"}`,err.Error()))); err2 != nil {
 				logger.With("error", err, "error_2", err2).Error("could not write response")
 				w.WriteHeader(http.StatusInternalServerError)
 				return

@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/metabs/server/workspace"
 	"github.com/metabs/server/workspace/collection"
 	"github.com/metabs/server/workspace/collection/tab"
@@ -63,7 +64,7 @@ func addTab(repo workspace.Repo, log *zap.SugaredLogger) func(w http.ResponseWri
 		var rb addTabReq
 		switch err := json.NewDecoder(r.Body).Decode(&rb); {
 		case errors.Is(err, tab.ErrInvalidTitle) || errors.Is(err, tab.ErrInvalidDescription) || errors.Is(err, tab.ErrInvalidIcon) || errors.Is(err, tab.ErrInvalidLink):
-			if _, err2 := w.Write([]byte(err.Error())); err2 != nil {
+			if _, err2 := w.Write([]byte(fmt.Sprintf(`{"error":"%s"}`,err.Error()))); err2 != nil {
 				logger.With("error", err, "error_2", err2).Error("could not write response")
 				w.WriteHeader(http.StatusInternalServerError)
 				return
