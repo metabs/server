@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/metabs/server/customer"
 	"github.com/metabs/server/email"
@@ -50,7 +51,7 @@ func changeEmail(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogge
 		case errors.Is(err, customer.ErrInvalidEmail):
 			w.WriteHeader(http.StatusUnauthorized)
 
-			if _, err2 := w.Write([]byte(err.Error())); err2 != nil {
+			if _, err2 := w.Write([]byte(fmt.Sprintf(`{"error":"%s"}`,err.Error()))); err2 != nil {
 				logger.With("error", err, "error_2", err2).Error("could not write response")
 				w.WriteHeader(http.StatusInternalServerError)
 				return

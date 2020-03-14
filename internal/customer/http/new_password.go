@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/metabs/server/customer"
 	"github.com/metabs/server/email"
@@ -12,7 +13,7 @@ import (
 )
 
 type newPasswordReq struct {
-	Password customer.Password `json:"email"`
+	Password customer.Password `json:"password"`
 }
 
 func (r *newPasswordReq) UnmarshalJSON(data []byte) error {
@@ -30,12 +31,12 @@ func (r *newPasswordReq) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func newPassword(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogger) func(w http.ResponseWriter, r *http.Request) {
+func resetPassword(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, span := trace.StartSpan(r.Context(), "new password")
+		ctx, span := trace.StartSpan(r.Context(), "reset password")
 		defer span.End()
 
-		logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "new password")
+		logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "reset password")
 
 		id, err := customer.NewID(chi.URLParam(r, "id"))
 		if err != nil {
@@ -50,7 +51,7 @@ func newPassword(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogge
 		switch err := json.NewDecoder(r.Body).Decode(&rb); {
 		case errors.Is(err, customer.ErrInvalidPassword):
 			w.WriteHeader(http.StatusBadRequest)
-			if _, err2 := w.Write([]byte(err.Error())); err2 != nil {
+			if _, err2 := w.Write([]byte(fmt.Sprintf(`{"error":"%s"}`,err.Error()))); err2 != nil {
 				logger.With("error", err, "error_2", err2).Error("could not write response")
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -81,7 +82,7 @@ func newPassword(repo customer.Repo, sender *email.Sender, log *zap.SugaredLogge
 		}
 
 		// TODO: when not a MVP use a queue
-		if err := sender.SendChangePassword(ctx, c.Email.String(), c.ID.String(), c.ChangePasswordHash); err != nil {
+		if err := sender.SendResetPassword(ctx, c.Email.String(), c.ID.String(), c.ChangePasswordHash); err != nil {
 			logger.With("error", err).Error("could not send email")
 		}
 

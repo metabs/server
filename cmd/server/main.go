@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/metabs/server/internal/customer"
 	customerHTTP "github.com/metabs/server/internal/customer/http"
+	"github.com/metabs/server/internal/email"
 	"github.com/metabs/server/internal/jwt"
 	"github.com/metabs/server/internal/workspace"
 	workspaceHTTP "github.com/metabs/server/internal/workspace/http"

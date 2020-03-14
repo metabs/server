@@ -13,7 +13,6 @@ func delete(repo customer.Repo, log *zap.SugaredLogger) func(w http.ResponseWrit
 		defer span.End()
 
 		logger := log.With("trace_id", span.SpanContext().TraceID.String(), "action", "delete")
-
 		ws, ok := ctx.Value(customerCtxKey).(*customer.Customer)
 		if !ok {
 			logger.Error("could not get customer")

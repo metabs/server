@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/metabs/server/workspace"
 	"github.com/metabs/server/workspace/collection"
 	"go.opencensus.io/trace"
@@ -47,7 +48,7 @@ func addCollection(repo workspace.Repo, log *zap.SugaredLogger) func(w http.Resp
 		var rb addCollectionReq
 		switch err := json.NewDecoder(r.Body).Decode(&rb); {
 		case errors.Is(err, collection.ErrInvalidName):
-			if _, err2 := w.Write([]byte(err.Error())); err2 != nil {
+			if _, err2 := w.Write([]byte(fmt.Sprintf(`{"error":"%s"}`,err.Error()))); err2 != nil {
 				logger.With("error", err, "error_2", err2).Error("could not write response")
 				w.WriteHeader(http.StatusInternalServerError)
 				return
