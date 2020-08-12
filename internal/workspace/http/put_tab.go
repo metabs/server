@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-chi/chi"
-	"github.com/metabs/server/workspace"
-	"github.com/metabs/server/workspace/collection"
-	"github.com/metabs/server/workspace/collection/tab"
+	"github.com/metabs/server/tab"
+	"github.com/metabs/server/tab/collection"
+	"github.com/metabs/server/tab/collection/workspace"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
@@ -65,7 +65,7 @@ func putTab(repo workspace.Repo, log *zap.SugaredLogger) func(w http.ResponseWri
 		}
 
 		t, ok := ws.FindTab(id, collID)
-		if ! ok {
+		if !ok {
 			logger.Info("could not find tab")
 			w.WriteHeader(http.StatusNotFound)
 			return

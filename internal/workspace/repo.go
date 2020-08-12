@@ -5,9 +5,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/metabs/server/workspace"
-	"github.com/metabs/server/workspace/collection"
-	"github.com/metabs/server/workspace/collection/tab"
+	"github.com/metabs/server/tab"
+	"github.com/metabs/server/tab/collection"
+	"github.com/metabs/server/tab/collection/workspace"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"google.golang.org/api/iterator"
@@ -122,7 +122,7 @@ func (r *Repo) Delete(ctx context.Context, id workspace.ID) error {
 	defer span.End()
 
 	logger := r.Logger.With("trace_id", span.SpanContext().TraceID.String(), "id", id, "action", "Delete")
-	
+
 	if _, err := r.Client.Collection(CollectionName).Doc(id.String()).Delete(ctx); err != nil {
 		logger.With("error", err).Error("could not delete document")
 		return fmt.Errorf("%w:%s", workspace.ErrRepoDelete, err)

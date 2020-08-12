@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/metabs/server/workspace"
+	"github.com/metabs/server/tab/collection/workspace"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"

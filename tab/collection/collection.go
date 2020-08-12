@@ -1,7 +1,7 @@
 package collection
 
 import (
-	"github.com/metabs/server/workspace/collection/tab"
+	"github.com/metabs/server/tab"
 	"time"
 )
 
