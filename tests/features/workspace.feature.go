@@ -12,7 +12,7 @@ import (
 	customerInt "github.com/metabs/server/internal/customer"
 	"github.com/metabs/server/internal/jwt"
 	workspaceInt "github.com/metabs/server/internal/workspace"
-	"github.com/metabs/server/workspace"
+	"github.com/metabs/server/tab/collection/workspace"
 	"io/ioutil"
 	"net/http"
 	"strings"

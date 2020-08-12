@@ -1,6 +1,4 @@
-FROM golang:1.13.4 AS builder
-ENV GO111MODULE="on"
-ENV GOFLAGS=" -mod=vendor"
+FROM golang:1.14.1 AS builder
 WORKDIR /go/src/github.com/metabs/server
 COPY . .
 RUN make

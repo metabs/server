@@ -2,7 +2,7 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/metabs/server/workspace"
+	"github.com/metabs/server/tab/collection/workspace"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
@@ -22,7 +22,6 @@ func get(repo workspace.Repo, log *zap.SugaredLogger) func(w http.ResponseWriter
 			return
 		}
 		logger = logger.With("workspace_id", ws.ID)
-
 
 		if err := json.NewEncoder(w).Encode(ws); err != nil {
 			logger.With("error", err).Error("could not write response")

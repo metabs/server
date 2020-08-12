@@ -2,9 +2,9 @@ package http
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/metabs/server/workspace"
-	"github.com/metabs/server/workspace/collection"
-	"github.com/metabs/server/workspace/collection/tab"
+	"github.com/metabs/server/tab"
+	"github.com/metabs/server/tab/collection"
+	"github.com/metabs/server/tab/collection/workspace"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"

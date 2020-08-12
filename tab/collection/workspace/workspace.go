@@ -1,8 +1,8 @@
 package workspace
 
 import (
-	"github.com/metabs/server/workspace/collection"
-	"github.com/metabs/server/workspace/collection/tab"
+	"github.com/metabs/server/tab"
+	"github.com/metabs/server/tab/collection"
 	"time"
 )
 

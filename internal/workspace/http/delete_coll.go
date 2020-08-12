@@ -2,8 +2,8 @@ package http
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/metabs/server/workspace"
-	"github.com/metabs/server/workspace/collection"
+	"github.com/metabs/server/tab/collection"
+	"github.com/metabs/server/tab/collection/workspace"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"net/http"
@@ -23,7 +23,6 @@ func deleteCollection(repo workspace.Repo, log *zap.SugaredLogger) func(w http.R
 			return
 		}
 		logger = logger.With("workspace_id", ws.ID)
-
 
 		id, err := collection.NewID(chi.URLParam(r, "id"))
 		if err != nil {
